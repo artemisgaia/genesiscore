@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shop | Genesis Core</title>
+    <meta
+      name="description"
+      content="Shop Genesis Core supplements by category: Energy, Focus, Immunity, Sleep, Recovery, and Foundational Core Base."
+    />
+    <link rel="canonical" href="https://genesiscore.com/shop.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Shop | Genesis Core" />
+    <meta
+      property="og:description"
+      content="Clinical clarity, precise dosing, and modular stack architecture for long-term consistency."
+    />
+    <meta property="og:url" content="https://genesiscore.com/shop.html" />
+    <meta property="og:image" content="https://genesiscore.com/assets/logo-dark.svg" />
+    <meta name="theme-color" content="#0f151b" />
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+    <script>
+      (function () {
+        try {
+          var key = 'genesis_core_theme_v1';
+          var saved = localStorage.getItem(key);
+          var hour = new Date().getHours();
+          var autoTheme = hour >= 7 && hour < 19 ? 'light' : 'dark';
+          var theme = saved === 'light' || saved === 'dark' ? saved : autoTheme;
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (error) {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@500;600;700&family=Sora:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles/main.css" />
+  </head>
+  <body>
+    <div class="announcement">
+      <div class="container">
+        <span>What It Is / What It Does / How To Use - Standardized On Every Product</span>
+      </div>
+    </div>
+
+    <header class="site-header">
+      <div class="container nav">
+        <a href="index.html" class="brand" aria-label="Genesis Core home">
+          <img src="assets/logo-dark.svg" data-brand-logo="true" alt="Genesis Core" width="260" height="62" />
+        </a>
+
+        <nav class="nav-links" aria-label="Primary">
+          <a href="index.html">Home</a>
+          <a href="shop.html">Shop</a>
+          <a href="science.html">Science</a>
+          <a href="quiz.html">Core Quiz</a>
+          <a href="about.html">About</a>
+          <a href="contact.html">Contact</a>
+        </nav>
+
+        <div class="nav-actions">
+          <button class="btn btn-outline theme-toggle" type="button" data-theme-toggle>
+            Dark Mode
+          </button>
+          <button class="btn btn-outline cart-trigger" type="button" data-open-cart>
+            Cart <span class="cart-count" data-cart-count>0</span>
+          </button>
+          <button class="btn btn-outline menu-toggle" type="button" data-menu-toggle aria-expanded="false">
+            Menu
+          </button>
+        </div>
+      </div>
+
+      <div class="container mobile-menu" data-mobile-menu>
+        <a href="index.html">Home</a>
+        <a href="shop.html">Shop</a>
+        <a href="science.html">Science</a>
+        <a href="quiz.html">Core Quiz</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="page-hero">
+        <div class="container">
+          <span class="eyebrow">All Products</span>
+          <h1>Modular supplements for a system-driven routine.</h1>
+          <p class="section-copy">
+            Filter by objective and category. Every product page includes clinical summary, dosage guidance, quality
+            controls, and caution details.
+          </p>
+
+          <div class="category-links">
+            <a href="collections/energy.html">Energy</a>
+            <a href="collections/focus.html">Focus</a>
+            <a href="collections/immunity.html">Immunity</a>
+            <a href="collections/sleep.html">Sleep</a>
+            <a href="collections/recovery.html">Recovery</a>
+            <a href="collections/foundational.html">Core Base</a>
+            <a href="collections/performance.html">Core Performance</a>
+          </div>
+
+          <div class="controls-grid">
+            <input type="search" placeholder="Search products" data-search-products />
+            <select data-filter-category>
+              <option value="all">All Categories</option>
+            </select>
+            <select data-sort-products>
+              <option value="featured">Sort: Featured</option>
+              <option value="price-asc">Sort: Price Low to High</option>
+              <option value="price-desc">Sort: Price High to Low</option>
+            </select>
+          </div>
+
+          <p class="results-row"><strong data-results-count>0</strong> products available</p>
+          <div class="product-grid" data-shop-grid></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <img src="assets/logo-dark.svg" data-brand-logo="true" alt="Genesis Core" width="260" height="62" />
+            <p>Bio-tech minimalist supplement systems for consistent performance hygiene.</p>
+          </div>
+          <div>
+            <h3 class="footer-title">Commerce</h3>
+            <nav class="footer-links">
+              <a href="shop.html">All Products</a>
+              <a href="quiz.html">Core Quiz</a>
+              <a href="science.html">Science / Standards</a>
+              <a href="quality.html">Quality & Testing</a>
+            </nav>
+          </div>
+          <div>
+            <h3 class="footer-title">Brand</h3>
+            <nav class="footer-links">
+              <a href="about.html">About Genesis Core</a>
+              <a href="contact.html">Contact</a>
+              <a href="index.html#faq">FAQ</a>
+            </nav>
+          </div>
+          <div>
+            <h3 class="footer-title">Policies</h3>
+            <nav class="footer-links">
+              <a href="shipping.html">Shipping</a>
+              <a href="returns.html">Returns</a>
+              <a href="privacy.html">Privacy</a>
+              <a href="terms.html">Terms</a>
+              <a href="disclaimer.html">Supplement Disclaimer</a>
+            </nav>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <span>(c) <span data-year></span> Genesis Core. All rights reserved.</span>
+          <span>Science-Backed Vitality, Engineered For Consistency</span>
+        </div>
+      </div>
+    </footer>
+
+    <div class="cart-backdrop" data-cart-backdrop></div>
+    <aside class="cart-drawer" data-cart-drawer aria-label="Shopping cart">
+      <div class="cart-header">
+        <h2 class="cart-title">Your Cart</h2>
+        <button type="button" class="btn btn-ghost" data-close-cart>Close</button>
+      </div>
+      <div class="cart-body">
+        <p class="cart-empty" data-cart-empty>Your cart is currently empty.</p>
+        <div class="cart-items" data-cart-items></div>
+      </div>
+      <div class="cart-footer">
+        <div class="cart-total">
+          <span>Subtotal</span>
+          <strong data-cart-total>$0</strong>
+        </div>
+        <a href="cart.html" class="btn btn-outline">Open Cart</a>
+        <a href="checkout.html" class="btn btn-primary">Checkout</a>
+        <p class="cart-note">Shipping and tax calculated at checkout.</p>
+      </div>
+    </aside>
+
+    <script src="scripts/products.js" defer></script>
+    <script src="scripts/main.js" defer></script>
+    <script src="scripts/shop.js" defer></script>
+  </body>
+</html>

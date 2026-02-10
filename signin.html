@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign In | Genesis Core</title>
+    <meta name="description" content="Sign in or create an account for Genesis Core." />
+    <meta name="theme-color" content="#0f151b" />
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+    <script>
+      (function () {
+        try {
+          var key = 'genesis_core_theme_v1';
+          var saved = localStorage.getItem(key);
+          var hour = new Date().getHours();
+          var autoTheme = hour >= 7 && hour < 19 ? 'light' : 'dark';
+          var theme = saved === 'light' || saved === 'dark' ? saved : autoTheme;
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (error) {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@500;600;700&family=Sora:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles/main.css" />
+  </head>
+  <body>
+    <div class="announcement">
+      <div class="container">
+        <span>Secure Account Access</span>
+      </div>
+    </div>
+
+    <header class="site-header">
+      <div class="container nav">
+        <a href="index.html" class="brand" aria-label="Genesis Core home">
+          <img src="assets/logo-dark.svg" data-brand-logo="true" alt="Genesis Core" width="260" height="62" />
+        </a>
+
+        <nav class="nav-links" aria-label="Primary">
+          <a href="index.html">Home</a>
+          <a href="shop.html">Shop</a>
+          <a href="science.html">Science</a>
+          <a href="quiz.html">Core Quiz</a>
+          <a href="about.html">About</a>
+          <a href="contact.html">Contact</a>
+        </nav>
+
+        <div class="nav-actions">
+          <button class="btn btn-outline theme-toggle" type="button" data-theme-toggle>Dark Mode</button>
+          <button class="btn btn-outline cart-trigger" type="button" data-open-cart>
+            Cart <span class="cart-count" data-cart-count>0</span>
+          </button>
+          <button class="btn btn-outline menu-toggle" type="button" data-menu-toggle aria-expanded="false">Menu</button>
+        </div>
+      </div>
+
+      <div class="container mobile-menu" data-mobile-menu>
+        <a href="index.html">Home</a>
+        <a href="shop.html">Shop</a>
+        <a href="science.html">Science</a>
+        <a href="quiz.html">Core Quiz</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="page-hero">
+        <div class="container split-grid">
+          <article class="panel">
+            <span class="eyebrow">Account</span>
+            <h1>Sign in</h1>
+            <form class="form-grid" data-signin-form novalidate>
+              <label class="sr-only" for="signin-email">Email</label>
+              <input id="signin-email" name="email" type="email" placeholder="Email" autocomplete="email" required />
+              <label class="sr-only" for="signin-password">Password</label>
+              <input id="signin-password" name="password" type="password" placeholder="Password" autocomplete="current-password" required />
+              <button class="btn btn-primary" type="submit">Sign In</button>
+            </form>
+            <p class="auth-feedback" data-auth-feedback aria-live="polite"></p>
+          </article>
+          <article class="panel">
+            <span class="eyebrow">New User</span>
+            <h3>Create account</h3>
+            <form class="form-grid" data-signup-form novalidate>
+              <label class="sr-only" for="signup-name">Full name</label>
+              <input id="signup-name" name="name" type="text" placeholder="Full name" autocomplete="name" required />
+              <label class="sr-only" for="signup-email">Email</label>
+              <input id="signup-email" name="email" type="email" placeholder="Email" autocomplete="email" required />
+              <label class="sr-only" for="signup-country">Primary shipping country</label>
+              <select id="signup-country" name="country" required aria-label="Primary shipping country">
+                <option value="">Primary shipping country</option>
+                <option value="United States">United States</option>
+                <optgroup label="Zone 1">
+                  <option value="Canada">Canada</option>
+                  <option value="Mexico">Mexico</option>
+                </optgroup>
+                <optgroup label="Zone 2">
+                  <option value="Australia">Australia</option>
+                  <option value="Austria">Austria</option>
+                  <option value="Belgium">Belgium</option>
+                  <option value="Bulgaria">Bulgaria</option>
+                  <option value="Croatia">Croatia</option>
+                  <option value="Cyprus">Cyprus</option>
+                  <option value="Czechia">Czechia</option>
+                  <option value="Denmark">Denmark</option>
+                  <option value="Estonia">Estonia</option>
+                  <option value="Finland">Finland</option>
+                  <option value="France">France</option>
+                  <option value="Germany">Germany</option>
+                  <option value="Greece">Greece</option>
+                  <option value="Hungary">Hungary</option>
+                  <option value="Ireland">Ireland</option>
+                  <option value="Italy">Italy</option>
+                  <option value="Latvia">Latvia</option>
+                  <option value="Lithuania">Lithuania</option>
+                  <option value="Luxembourg">Luxembourg</option>
+                  <option value="Malta">Malta</option>
+                  <option value="Netherlands">Netherlands</option>
+                  <option value="Norway">Norway</option>
+                  <option value="Poland">Poland</option>
+                  <option value="Portugal">Portugal</option>
+                  <option value="Romania">Romania</option>
+                  <option value="Slovakia">Slovakia</option>
+                  <option value="Slovenia">Slovenia</option>
+                  <option value="Sweden">Sweden</option>
+                  <option value="Switzerland">Switzerland</option>
+                  <option value="United Kingdom">United Kingdom</option>
+                </optgroup>
+                <optgroup label="Zone 3">
+                  <option value="Albania">Albania</option>
+                  <option value="Bosnia and Herzegovina">Bosnia and Herzegovina</option>
+                  <option value="Georgia">Georgia</option>
+                  <option value="Gibraltar">Gibraltar</option>
+                  <option value="Iceland">Iceland</option>
+                  <option value="Liechtenstein">Liechtenstein</option>
+                  <option value="North Macedonia">North Macedonia</option>
+                  <option value="Montenegro">Montenegro</option>
+                  <option value="Serbia">Serbia</option>
+                  <option value="Turkey">Turkey</option>
+                </optgroup>
+              </select>
+              <label class="sr-only" for="signup-password">Create password</label>
+              <input id="signup-password" name="password" type="password" placeholder="Create password" autocomplete="new-password" required />
+              <button class="btn btn-outline" type="submit">Create Account</button>
+            </form>
+            <p class="form-note">Primary shipping country must be a supported destination.</p>
+            <p class="auth-feedback" data-signup-feedback aria-live="polite"></p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-bottom">
+          <span>(c) <span data-year></span> Genesis Core.</span>
+          <span>Account Access</span>
+        </div>
+      </div>
+    </footer>
+
+    <div class="cart-backdrop" data-cart-backdrop></div>
+    <aside class="cart-drawer" data-cart-drawer aria-label="Shopping cart">
+      <div class="cart-header">
+        <h2 class="cart-title">Your Cart</h2>
+        <button type="button" class="btn btn-ghost" data-close-cart>Close</button>
+      </div>
+      <div class="cart-body">
+        <p class="cart-empty" data-cart-empty>Your cart is currently empty.</p>
+        <div class="cart-items" data-cart-items></div>
+      </div>
+      <div class="cart-footer">
+        <div class="cart-total">
+          <span>Subtotal</span>
+          <strong data-cart-total>$0</strong>
+        </div>
+        <a href="cart.html" class="btn btn-outline">Open Cart</a>
+        <a href="checkout.html" class="btn btn-primary">Checkout</a>
+        <p class="cart-note">Shipping and tax calculated at checkout.</p>
+      </div>
+    </aside>
+
+    <script src="scripts/products.js" defer></script>
+    <script src="scripts/main.js" defer></script>
+    <script src="scripts/notifications.js" defer></script>
+    <script src="scripts/account.js" defer></script>
+  </body>
+</html>

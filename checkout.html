@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Checkout | Genesis Core</title>
+    <meta name="description" content="Secure checkout for Genesis Core orders." />
+    <meta name="theme-color" content="#0f151b" />
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+    <script>
+      (function () {
+        try {
+          var key = 'genesis_core_theme_v1';
+          var saved = localStorage.getItem(key);
+          var hour = new Date().getHours();
+          var autoTheme = hour >= 7 && hour < 19 ? 'light' : 'dark';
+          var theme = saved === 'light' || saved === 'dark' ? saved : autoTheme;
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (error) {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@500;600;700&family=Sora:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles/main.css" />
+  </head>
+  <body>
+    <div class="announcement">
+      <div class="container">
+        <span>Secure Checkout</span>
+      </div>
+    </div>
+
+    <header class="site-header">
+      <div class="container nav">
+        <a href="index.html" class="brand" aria-label="Genesis Core home">
+          <img src="assets/logo-dark.svg" data-brand-logo="true" alt="Genesis Core" width="260" height="62" />
+        </a>
+
+        <nav class="nav-links" aria-label="Primary">
+          <a href="index.html">Home</a>
+          <a href="shop.html">Shop</a>
+          <a href="science.html">Science</a>
+          <a href="quiz.html">Core Quiz</a>
+          <a href="about.html">About</a>
+          <a href="contact.html">Contact</a>
+        </nav>
+
+        <div class="nav-actions">
+          <button class="btn btn-outline theme-toggle" type="button" data-theme-toggle>Dark Mode</button>
+          <button class="btn btn-outline cart-trigger" type="button" data-open-cart>
+            Cart <span class="cart-count" data-cart-count>0</span>
+          </button>
+          <button class="btn btn-outline menu-toggle" type="button" data-menu-toggle aria-expanded="false">Menu</button>
+        </div>
+      </div>
+
+      <div class="container mobile-menu" data-mobile-menu>
+        <a href="index.html">Home</a>
+        <a href="shop.html">Shop</a>
+        <a href="science.html">Science</a>
+        <a href="quiz.html">Core Quiz</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="page-hero">
+        <div class="container split-grid">
+          <article class="panel">
+            <span class="eyebrow">Checkout</span>
+            <h1>Complete your order.</h1>
+            <p class="section-copy">
+              Secure order flow. Shipping and destination controls are validated before placement.
+            </p>
+            <form class="form-grid" data-checkout-form>
+              <label class="sr-only" for="checkout-full-name">Full name</label>
+              <input id="checkout-full-name" name="full_name" required type="text" placeholder="Full name" autocomplete="name" />
+              <label class="sr-only" for="checkout-email">Email</label>
+              <input id="checkout-email" name="email" required type="email" placeholder="Email" autocomplete="email" />
+              <label class="sr-only" for="checkout-country">Shipping country</label>
+              <select id="checkout-country" name="country" required aria-label="Shipping country">
+                <option value="">Shipping country</option>
+                <option value="United States">United States</option>
+                <optgroup label="Zone 1">
+                  <option value="Canada">Canada</option>
+                  <option value="Mexico">Mexico</option>
+                </optgroup>
+                <optgroup label="Zone 2">
+                  <option value="Australia">Australia</option>
+                  <option value="Austria">Austria</option>
+                  <option value="Belgium">Belgium</option>
+                  <option value="Bulgaria">Bulgaria</option>
+                  <option value="Croatia">Croatia</option>
+                  <option value="Cyprus">Cyprus</option>
+                  <option value="Czechia">Czechia</option>
+                  <option value="Denmark">Denmark</option>
+                  <option value="Estonia">Estonia</option>
+                  <option value="Finland">Finland</option>
+                  <option value="France">France</option>
+                  <option value="Germany">Germany</option>
+                  <option value="Greece">Greece</option>
+                  <option value="Hungary">Hungary</option>
+                  <option value="Ireland">Ireland</option>
+                  <option value="Italy">Italy</option>
+                  <option value="Latvia">Latvia</option>
+                  <option value="Lithuania">Lithuania</option>
+                  <option value="Luxembourg">Luxembourg</option>
+                  <option value="Malta">Malta</option>
+                  <option value="Netherlands">Netherlands</option>
+                  <option value="Norway">Norway</option>
+                  <option value="Poland">Poland</option>
+                  <option value="Portugal">Portugal</option>
+                  <option value="Romania">Romania</option>
+                  <option value="Slovakia">Slovakia</option>
+                  <option value="Slovenia">Slovenia</option>
+                  <option value="Sweden">Sweden</option>
+                  <option value="Switzerland">Switzerland</option>
+                  <option value="United Kingdom">United Kingdom</option>
+                </optgroup>
+                <optgroup label="Zone 3">
+                  <option value="Albania">Albania</option>
+                  <option value="Bosnia and Herzegovina">Bosnia and Herzegovina</option>
+                  <option value="Georgia">Georgia</option>
+                  <option value="Gibraltar">Gibraltar</option>
+                  <option value="Iceland">Iceland</option>
+                  <option value="Liechtenstein">Liechtenstein</option>
+                  <option value="North Macedonia">North Macedonia</option>
+                  <option value="Montenegro">Montenegro</option>
+                  <option value="Serbia">Serbia</option>
+                  <option value="Turkey">Turkey</option>
+                </optgroup>
+                <optgroup label="Zone 3 Extended (Estimate)">
+                  <option value="Moldova">Moldova</option>
+                  <option value="Spain">Spain</option>
+                  <option value="Saudi Arabia">Saudi Arabia</option>
+                  <option value="United Arab Emirates">United Arab Emirates</option>
+                  <option value="Egypt">Egypt</option>
+                  <option value="Israel">Israel</option>
+                  <option value="Japan">Japan</option>
+                  <option value="South Korea">South Korea</option>
+                  <option value="Thailand">Thailand</option>
+                  <option value="Qatar">Qatar</option>
+                  <option value="Philippines">Philippines</option>
+                </optgroup>
+              </select>
+              <label class="sr-only" for="checkout-us-region">US shipping region</label>
+              <select id="checkout-us-region" name="us_region" aria-label="US shipping region">
+                <option value="auto">US region: Auto-detect from state/region field</option>
+                <option value="lower-48">US region: Lower 48 states</option>
+                <option value="alaska-hawaii">US region: Alaska / Hawaii</option>
+              </select>
+              <label class="sr-only" for="checkout-shipping-service">Shipping service</label>
+              <select id="checkout-shipping-service" name="shipping_service" required aria-label="Shipping service">
+                <option value="regular">Shipping service: Regular</option>
+                <option value="express">Shipping service: Express</option>
+              </select>
+              <label class="sr-only" for="checkout-address">Shipping address</label>
+              <input id="checkout-address" name="address" required type="text" placeholder="Shipping address" autocomplete="street-address" />
+              <label class="sr-only" for="checkout-city-region">City / State / Region</label>
+              <input id="checkout-city-region" name="city_region" required type="text" placeholder="City / State / Region" autocomplete="address-level1" />
+              <label class="sr-only" for="checkout-postal-code">Postal code</label>
+              <input id="checkout-postal-code" name="postal_code" required type="text" placeholder="Postal code" autocomplete="postal-code" />
+              <div class="stripe-payment-block">
+                <p class="results-row" style="margin-top: 0.2rem">Payment details</p>
+                <div class="stripe-card-field" data-stripe-card aria-label="Card details"></div>
+                <p class="form-note">Card processing by Stripe.</p>
+                <p class="auth-feedback" data-stripe-feedback aria-live="polite"></p>
+              </div>
+              <button class="btn btn-primary" type="submit" data-checkout-submit>Place Order</button>
+            </form>
+            <p class="form-note">
+              Rates follow the Shipping Policy. Unsupported or custom-quote routes cannot auto-process.
+            </p>
+            <p class="form-note">
+              Zone 3 Extended uses estimate rates and may require carrier confirmation after order.
+            </p>
+            <p class="auth-feedback" data-checkout-feedback aria-live="polite"></p>
+          </article>
+          <article class="panel">
+            <span class="eyebrow">Order Summary</span>
+            <h3>Current totals</h3>
+            <p class="results-row" style="margin-top: 0.4rem">Subtotal: <strong data-checkout-subtotal>$0</strong></p>
+            <p class="results-row results-row--discount">Stack savings: <strong data-checkout-discount>$0</strong></p>
+            <p class="results-row">Estimated shipping: <strong data-checkout-shipping>$0</strong></p>
+            <p class="results-row">Estimated tax: <strong data-checkout-tax>$0</strong></p>
+            <p class="results-row">Estimated total: <strong data-checkout-total>$0</strong></p>
+            <p class="section-copy" data-checkout-shipping-note>
+              Shipping is calculated by destination and estimated parcel weight.
+            </p>
+            <button type="button" class="btn btn-outline" data-remove-unavailable-checkout hidden>
+              Remove Undeliverable Items
+            </button>
+            <p class="form-note" data-us-only-checkout-note aria-live="polite"></p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-bottom">
+          <span>(c) <span data-year></span> Genesis Core. All rights reserved.</span>
+          <span>Checkout</span>
+        </div>
+      </div>
+    </footer>
+
+    <div class="cart-backdrop" data-cart-backdrop></div>
+    <aside class="cart-drawer" data-cart-drawer aria-label="Shopping cart">
+      <div class="cart-header">
+        <h2 class="cart-title">Your Cart</h2>
+        <button type="button" class="btn btn-ghost" data-close-cart>Close</button>
+      </div>
+      <div class="cart-body">
+        <p class="cart-empty" data-cart-empty>Your cart is currently empty.</p>
+        <div class="cart-items" data-cart-items></div>
+      </div>
+      <div class="cart-footer">
+        <div class="cart-total">
+          <span>Subtotal</span>
+          <strong data-cart-total>$0</strong>
+        </div>
+        <a href="cart.html" class="btn btn-outline">Open Cart</a>
+        <a href="checkout.html" class="btn btn-primary">Checkout</a>
+        <p class="cart-note">Shipping and tax calculated at checkout.</p>
+      </div>
+    </aside>
+
+    <script src="scripts/products.js" defer></script>
+    <script src="scripts/main.js" defer></script>
+    <script src="scripts/notifications.js" defer></script>
+    <script src="scripts/account.js" defer></script>
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="scripts/checkout.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contact | Genesis Core Concierge</title>
+    <meta
+      name="description"
+      content="Contact Genesis Core for product guidance, order support, subscription questions, and partnership inquiries."
+    />
+    <link rel="canonical" href="https://genesiscore.com/contact.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Contact | Genesis Core" />
+    <meta
+      property="og:description"
+      content="Concierge support for protocol planning, orders, and operational questions."
+    />
+    <meta property="og:url" content="https://genesiscore.com/contact.html" />
+    <meta property="og:image" content="https://genesiscore.com/assets/logo-dark.svg" />
+    <meta name="theme-color" content="#0f151b" />
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+    <script>
+      (function () {
+        try {
+          var key = 'genesis_core_theme_v1';
+          var saved = localStorage.getItem(key);
+          var hour = new Date().getHours();
+          var autoTheme = hour >= 7 && hour < 19 ? 'light' : 'dark';
+          var theme = saved === 'light' || saved === 'dark' ? saved : autoTheme;
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (error) {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@500;600;700&family=Sora:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles/main.css" />
+  </head>
+  <body>
+    <div class="announcement">
+      <div class="container">
+        <span>Concierge Hours: Monday-Friday, 9am-7pm EST</span>
+      </div>
+    </div>
+
+    <header class="site-header">
+      <div class="container nav">
+        <a href="index.html" class="brand" aria-label="Genesis Core home">
+          <img src="assets/logo-dark.svg" data-brand-logo="true" alt="Genesis Core" width="260" height="62" />
+        </a>
+
+        <nav class="nav-links" aria-label="Primary">
+          <a href="index.html">Home</a>
+          <a href="shop.html">Shop</a>
+          <a href="science.html">Science</a>
+          <a href="quiz.html">Core Quiz</a>
+          <a href="about.html">About</a>
+          <a href="contact.html">Contact</a>
+        </nav>
+
+        <div class="nav-actions">
+          <button class="btn btn-outline theme-toggle" type="button" data-theme-toggle>
+            Dark Mode
+          </button>
+          <button class="btn btn-outline cart-trigger" type="button" data-open-cart>
+            Cart <span class="cart-count" data-cart-count>0</span>
+          </button>
+          <button class="btn btn-outline menu-toggle" type="button" data-menu-toggle aria-expanded="false">
+            Menu
+          </button>
+        </div>
+      </div>
+
+      <div class="container mobile-menu" data-mobile-menu>
+        <a href="index.html">Home</a>
+        <a href="shop.html">Shop</a>
+        <a href="science.html">Science</a>
+        <a href="quiz.html">Core Quiz</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="page-hero">
+        <div class="container split-grid">
+          <div>
+            <span class="eyebrow">Genesis Concierge</span>
+            <h1>Direct support for protocol, orders, and operations.</h1>
+            <p class="section-copy">
+              Short response times, precise answers. Reach out for product selection, shipping updates, subscriptions,
+              or partnership opportunities.
+            </p>
+            <div class="timeline" style="margin-top: 1rem">
+              <div class="timeline-item">
+                <h3>Email Support</h3>
+                <p><a href="mailto:concierge@genesiscore.com">concierge@genesiscore.com</a></p>
+              </div>
+              <div class="timeline-item">
+                <h3>Partnerships</h3>
+                <p><a href="mailto:partners@genesiscore.com">partners@genesiscore.com</a></p>
+              </div>
+              <div class="timeline-item">
+                <h3>Response Target</h3>
+                <p>Within one business day for most requests.</p>
+              </div>
+            </div>
+          </div>
+
+          <article class="panel">
+            <span class="eyebrow">Contact Form</span>
+            <h3>Tell us what you need.</h3>
+            <form class="form-grid" data-lead-form>
+              <input type="text" required placeholder="Full name" />
+              <input type="email" required placeholder="Email address" />
+              <input type="text" placeholder="Order number (optional)" />
+              <textarea placeholder="How can we help?" required></textarea>
+              <button type="submit" class="btn btn-primary">Send Request</button>
+              <p class="form-note">By submitting, you consent to response from Genesis Core.</p>
+              <p class="form-feedback" data-form-feedback></p>
+            </form>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <span class="eyebrow">Support FAQ</span>
+          <h2 class="section-title">Operational questions answered clearly.</h2>
+          <div class="faq-grid" style="margin-top: 1rem">
+            <article class="faq-item">
+              <button type="button" data-accordion-button>How do I track my order?</button>
+              <div class="faq-answer">You receive tracking by email once the order ships.</div>
+            </article>
+            <article class="faq-item">
+              <button type="button" data-accordion-button>Can I edit my order?</button>
+              <div class="faq-answer">If processing has not started, concierge can often assist with changes.</div>
+            </article>
+            <article class="faq-item">
+              <button type="button" data-accordion-button>Do you offer subscriptions?</button>
+              <div class="faq-answer">
+                Yes. Subscription options are being rolled out by product and will expand across the catalog.
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <img src="assets/logo-dark.svg" data-brand-logo="true" alt="Genesis Core" width="260" height="62" />
+            <p>Bio-tech minimalist supplement systems for consistent performance hygiene.</p>
+          </div>
+          <div>
+            <h3 class="footer-title">Commerce</h3>
+            <nav class="footer-links">
+              <a href="shop.html">All Products</a>
+              <a href="quiz.html">Core Quiz</a>
+              <a href="science.html">Science / Standards</a>
+            </nav>
+          </div>
+          <div>
+            <h3 class="footer-title">Brand</h3>
+            <nav class="footer-links">
+              <a href="about.html">About Genesis Core</a>
+              <a href="contact.html">Contact</a>
+              <a href="index.html#faq">FAQ</a>
+            </nav>
+          </div>
+          <div>
+            <h3 class="footer-title">Policies</h3>
+            <nav class="footer-links">
+              <a href="shipping.html">Shipping</a>
+              <a href="returns.html">Returns</a>
+              <a href="privacy.html">Privacy</a>
+              <a href="terms.html">Terms</a>
+              <a href="disclaimer.html">Supplement Disclaimer</a>
+            </nav>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <span>(c) <span data-year></span> Genesis Core. All rights reserved.</span>
+          <span>Concierge Support</span>
+        </div>
+      </div>
+    </footer>
+
+    <div class="cart-backdrop" data-cart-backdrop></div>
+    <aside class="cart-drawer" data-cart-drawer aria-label="Shopping cart">
+      <div class="cart-header">
+        <h2 class="cart-title">Your Cart</h2>
+        <button type="button" class="btn btn-ghost" data-close-cart>Close</button>
+      </div>
+      <div class="cart-body">
+        <p class="cart-empty" data-cart-empty>Your cart is currently empty.</p>
+        <div class="cart-items" data-cart-items></div>
+      </div>
+      <div class="cart-footer">
+        <div class="cart-total">
+          <span>Subtotal</span>
+          <strong data-cart-total>$0</strong>
+        </div>
+        <a href="cart.html" class="btn btn-outline">Open Cart</a>
+        <a href="checkout.html" class="btn btn-primary">Checkout</a>
+        <p class="cart-note">Shipping and tax calculated at checkout.</p>
+      </div>
+    </aside>
+
+    <script src="scripts/products.js" defer></script>
+    <script src="scripts/main.js" defer></script>
+  </body>
+</html>

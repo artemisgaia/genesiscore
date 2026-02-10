@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Core Quiz | Genesis Core</title>
+    <meta
+      name="description"
+      content="Take the Genesis Core 5-step quiz to generate your recommended supplement stack based on objective, stress, sleep, and workload."
+    />
+    <link rel="canonical" href="https://genesiscore.com/quiz.html" />
+    <meta name="theme-color" content="#0f151b" />
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+    <script>
+      (function () {
+        try {
+          var key = 'genesis_core_theme_v1';
+          var saved = localStorage.getItem(key);
+          var hour = new Date().getHours();
+          var autoTheme = hour >= 7 && hour < 19 ? 'light' : 'dark';
+          var theme = saved === 'light' || saved === 'dark' ? saved : autoTheme;
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (error) {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@500;600;700&family=Sora:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles/main.css" />
+  </head>
+  <body>
+    <div class="announcement">
+      <div class="container">
+        <span>Core Quiz: 5 Steps To Your Baseline Stack</span>
+      </div>
+    </div>
+
+    <header class="site-header">
+      <div class="container nav">
+        <a href="index.html" class="brand" aria-label="Genesis Core home">
+          <img src="assets/logo-dark.svg" data-brand-logo="true" alt="Genesis Core" width="260" height="62" />
+        </a>
+        <nav class="nav-links" aria-label="Primary">
+          <a href="index.html">Home</a>
+          <a href="shop.html">Shop</a>
+          <a href="science.html">Science</a>
+          <a href="quiz.html">Core Quiz</a>
+          <a href="about.html">About</a>
+          <a href="contact.html">Contact</a>
+        </nav>
+        <div class="nav-actions">
+          <button class="btn btn-outline theme-toggle" type="button" data-theme-toggle>
+            Dark Mode
+          </button>
+          <button class="btn btn-outline cart-trigger" type="button" data-open-cart>
+            Cart <span class="cart-count" data-cart-count>0</span>
+          </button>
+          <button class="btn btn-outline menu-toggle" type="button" data-menu-toggle aria-expanded="false">
+            Menu
+          </button>
+        </div>
+      </div>
+      <div class="container mobile-menu" data-mobile-menu>
+        <a href="index.html">Home</a>
+        <a href="shop.html">Shop</a>
+        <a href="science.html">Science</a>
+        <a href="quiz.html">Core Quiz</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="page-hero">
+        <div class="container split-grid">
+          <div>
+            <span class="eyebrow">Personalization System</span>
+            <h1>The Core Quiz</h1>
+            <p class="section-copy">
+              Answer five structured questions. We map your answers to a recommended Core Stack and optional modules.
+            </p>
+          </div>
+          <article class="panel">
+            <span class="eyebrow">How It Works</span>
+            <h3>Fast and objective.</h3>
+            <div class="timeline">
+              <div class="timeline-item">
+                <h3>Step 1</h3>
+                <p>Select primary goal.</p>
+              </div>
+              <div class="timeline-item">
+                <h3>Step 2</h3>
+                <p>Score stress and sleep constraints.</p>
+              </div>
+              <div class="timeline-item">
+                <h3>Step 3</h3>
+                <p>Generate stack recommendation and refine.</p>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <form class="quiz-grid" data-core-quiz>
+            <article class="quiz-step">
+              <h3>1. Primary objective</h3>
+              <select name="goal" required>
+                <option value="">Select one</option>
+                <option value="focus">Focus and cognition</option>
+                <option value="energy">Energy stability</option>
+                <option value="sleep">Sleep and recovery</option>
+                <option value="recovery">Recovery and repair</option>
+                <option value="performance">Performance output</option>
+                <option value="immunity">Immune baseline</option>
+                <option value="foundation">General foundation</option>
+              </select>
+            </article>
+
+            <article class="quiz-step">
+              <h3>2. Current stress load</h3>
+              <select name="stress" required>
+                <option value="">Select one</option>
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+              </select>
+            </article>
+
+            <article class="quiz-step">
+              <h3>3. Sleep consistency</h3>
+              <select name="sleep" required>
+                <option value="">Select one</option>
+                <option value="poor">Inconsistent / poor</option>
+                <option value="ok">Moderate</option>
+                <option value="strong">Strong</option>
+              </select>
+            </article>
+
+            <article class="quiz-step">
+              <h3>4. Weekly training demand</h3>
+              <select name="training" required>
+                <option value="">Select one</option>
+                <option value="high">High</option>
+                <option value="moderate">Moderate</option>
+                <option value="low">Low</option>
+              </select>
+            </article>
+
+            <article class="quiz-step">
+              <h3>5. Existing supplement baseline</h3>
+              <select name="foundation" required>
+                <option value="">Select one</option>
+                <option value="none">No consistent baseline</option>
+                <option value="some">Partial baseline</option>
+                <option value="solid">Strong baseline</option>
+              </select>
+            </article>
+
+            <div class="hero-actions">
+              <button type="submit" class="btn btn-primary">Generate Core Stack</button>
+              <a href="shop.html" class="btn btn-outline">Skip To Shop</a>
+            </div>
+          </form>
+
+          <div class="quiz-result" data-quiz-result hidden></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <img src="assets/logo-dark.svg" data-brand-logo="true" alt="Genesis Core" width="260" height="62" />
+            <p>Bio-tech minimalist supplement systems for consistent performance hygiene.</p>
+          </div>
+          <div>
+            <h3 class="footer-title">Commerce</h3>
+            <nav class="footer-links">
+              <a href="shop.html">All Products</a>
+              <a href="quiz.html">Core Quiz</a>
+              <a href="science.html">Science / Standards</a>
+            </nav>
+          </div>
+          <div>
+            <h3 class="footer-title">Brand</h3>
+            <nav class="footer-links">
+              <a href="about.html">About Genesis Core</a>
+              <a href="contact.html">Contact</a>
+              <a href="index.html#faq">FAQ</a>
+            </nav>
+          </div>
+          <div>
+            <h3 class="footer-title">Policies</h3>
+            <nav class="footer-links">
+              <a href="shipping.html">Shipping</a>
+              <a href="returns.html">Returns</a>
+              <a href="privacy.html">Privacy</a>
+              <a href="terms.html">Terms</a>
+              <a href="disclaimer.html">Supplement Disclaimer</a>
+            </nav>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <span>(c) <span data-year></span> Genesis Core. All rights reserved.</span>
+          <span>Quiz-Driven Stack Builder</span>
+        </div>
+      </div>
+    </footer>
+
+    <div class="cart-backdrop" data-cart-backdrop></div>
+    <aside class="cart-drawer" data-cart-drawer aria-label="Shopping cart">
+      <div class="cart-header">
+        <h2 class="cart-title">Your Cart</h2>
+        <button type="button" class="btn btn-ghost" data-close-cart>Close</button>
+      </div>
+      <div class="cart-body">
+        <p class="cart-empty" data-cart-empty>Your cart is currently empty.</p>
+        <div class="cart-items" data-cart-items></div>
+      </div>
+      <div class="cart-footer">
+        <div class="cart-total">
+          <span>Subtotal</span>
+          <strong data-cart-total>$0</strong>
+        </div>
+        <a href="cart.html" class="btn btn-outline">Open Cart</a>
+        <a href="checkout.html" class="btn btn-primary">Checkout</a>
+        <p class="cart-note">Shipping and tax calculated at checkout.</p>
+      </div>
+    </aside>
+
+    <script src="scripts/products.js" defer></script>
+    <script src="scripts/main.js" defer></script>
+    <script src="scripts/quiz-engine.js" defer></script>
+    <script src="scripts/quiz.js" defer></script>
+  </body>
+</html>

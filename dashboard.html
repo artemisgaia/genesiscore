@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard | Genesis Core</title>
+    <meta name="description" content="Genesis Core account dashboard." />
+    <meta name="theme-color" content="#0f151b" />
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+    <script>
+      (function () {
+        try {
+          var key = 'genesis_core_theme_v1';
+          var saved = localStorage.getItem(key);
+          var hour = new Date().getHours();
+          var autoTheme = hour >= 7 && hour < 19 ? 'light' : 'dark';
+          var theme = saved === 'light' || saved === 'dark' ? saved : autoTheme;
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (error) {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@500;600;700&family=Sora:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles/main.css" />
+  </head>
+  <body>
+    <div class="announcement">
+      <div class="container">
+        <span>Account Control Center</span>
+      </div>
+    </div>
+
+    <header class="site-header">
+      <div class="container nav">
+        <a href="index.html" class="brand" aria-label="Genesis Core home">
+          <img src="assets/logo-dark.svg" data-brand-logo="true" alt="Genesis Core" width="260" height="62" />
+        </a>
+
+        <nav class="nav-links" aria-label="Primary">
+          <a href="index.html">Home</a>
+          <a href="shop.html">Shop</a>
+          <a href="science.html">Science</a>
+          <a href="quiz.html">Core Quiz</a>
+          <a href="about.html">About</a>
+          <a href="contact.html">Contact</a>
+        </nav>
+
+        <div class="nav-actions">
+          <button class="btn btn-outline theme-toggle" type="button" data-theme-toggle>Dark Mode</button>
+          <button class="btn btn-outline cart-trigger" type="button" data-open-cart>
+            Cart <span class="cart-count" data-cart-count>0</span>
+          </button>
+          <button class="btn btn-outline menu-toggle" type="button" data-menu-toggle aria-expanded="false">Menu</button>
+        </div>
+      </div>
+
+      <div class="container mobile-menu" data-mobile-menu>
+        <a href="index.html">Home</a>
+        <a href="shop.html">Shop</a>
+        <a href="science.html">Science</a>
+        <a href="quiz.html">Core Quiz</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </header>
+
+    <main data-account-dashboard>
+      <section class="page-hero">
+        <div class="container">
+          <span class="eyebrow">Account Dashboard</span>
+          <h1>Profile, orders, and routine data.</h1>
+          <p class="section-copy">Signed in as <strong data-account-name>Account User</strong> (<span data-account-email>-</span>)</p>
+          <div class="luxury-grid">
+            <article class="luxury-card">
+              <h3>Profile</h3>
+              <p>Account created: <strong data-account-created>-</strong></p>
+            </article>
+            <article class="luxury-card">
+              <h3>Orders</h3>
+              <p>Track order confirmations and shipping updates from transactional email logs.</p>
+            </article>
+            <article class="luxury-card">
+              <h3>Subscriptions</h3>
+              <p>Manage monthly refill cadence, pause, skip, or cancel in one workflow.</p>
+            </article>
+          </div>
+          <div class="hero-actions" style="margin-top: 1rem">
+            <a class="btn btn-primary" href="subscriptions.html">Manage Subscriptions</a>
+            <a class="btn btn-outline" href="quiz.html">Retake Quiz</a>
+            <button class="btn btn-ghost" type="button" data-signout-btn>Sign Out</button>
+          </div>
+          <article class="panel" style="margin-top: 1rem">
+            <span class="eyebrow">Shipping Region</span>
+            <h3>Destination eligibility</h3>
+            <form class="form-grid" data-region-form>
+              <label class="sr-only" for="dashboard-region-select">Default shipping country</label>
+              <select id="dashboard-region-select" name="country" data-region-select required aria-label="Default shipping country">
+                <option value="">Default shipping country</option>
+                <option value="United States">United States</option>
+                <optgroup label="Zone 1">
+                  <option value="Canada">Canada</option>
+                  <option value="Mexico">Mexico</option>
+                </optgroup>
+                <optgroup label="Zone 2">
+                  <option value="Australia">Australia</option>
+                  <option value="Austria">Austria</option>
+                  <option value="Belgium">Belgium</option>
+                  <option value="Bulgaria">Bulgaria</option>
+                  <option value="Croatia">Croatia</option>
+                  <option value="Cyprus">Cyprus</option>
+                  <option value="Czechia">Czechia</option>
+                  <option value="Denmark">Denmark</option>
+                  <option value="Estonia">Estonia</option>
+                  <option value="Finland">Finland</option>
+                  <option value="France">France</option>
+                  <option value="Germany">Germany</option>
+                  <option value="Greece">Greece</option>
+                  <option value="Hungary">Hungary</option>
+                  <option value="Ireland">Ireland</option>
+                  <option value="Italy">Italy</option>
+                  <option value="Latvia">Latvia</option>
+                  <option value="Lithuania">Lithuania</option>
+                  <option value="Luxembourg">Luxembourg</option>
+                  <option value="Malta">Malta</option>
+                  <option value="Netherlands">Netherlands</option>
+                  <option value="Norway">Norway</option>
+                  <option value="Poland">Poland</option>
+                  <option value="Portugal">Portugal</option>
+                  <option value="Romania">Romania</option>
+                  <option value="Slovakia">Slovakia</option>
+                  <option value="Slovenia">Slovenia</option>
+                  <option value="Sweden">Sweden</option>
+                  <option value="Switzerland">Switzerland</option>
+                  <option value="United Kingdom">United Kingdom</option>
+                </optgroup>
+                <optgroup label="Zone 3">
+                  <option value="Albania">Albania</option>
+                  <option value="Bosnia and Herzegovina">Bosnia and Herzegovina</option>
+                  <option value="Georgia">Georgia</option>
+                  <option value="Gibraltar">Gibraltar</option>
+                  <option value="Iceland">Iceland</option>
+                  <option value="Liechtenstein">Liechtenstein</option>
+                  <option value="North Macedonia">North Macedonia</option>
+                  <option value="Montenegro">Montenegro</option>
+                  <option value="Serbia">Serbia</option>
+                  <option value="Turkey">Turkey</option>
+                </optgroup>
+              </select>
+              <button class="btn btn-outline" type="submit">Save Region</button>
+            </form>
+            <p class="form-note">
+              Some destinations have constraints. Review shipping policy before checkout.
+            </p>
+            <p class="form-note">Current region: <strong data-account-country>Not set</strong></p>
+            <p class="auth-feedback" data-account-feedback aria-live="polite"></p>
+          </article>
+          <article class="panel" style="margin-top: 1rem">
+            <span class="eyebrow">Transactional Email</span>
+            <h3>Delivery and subscription notifications are active.</h3>
+            <p class="form-note">
+              Order, shipping, and subscription reminders queue automatically to your account email.
+            </p>
+            <p class="form-note" data-email-summary>Queued: 0 | Processed: 0</p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-bottom">
+          <span>(c) <span data-year></span> Genesis Core.</span>
+          <span>Account Dashboard</span>
+        </div>
+      </div>
+    </footer>
+
+    <div class="cart-backdrop" data-cart-backdrop></div>
+    <aside class="cart-drawer" data-cart-drawer aria-label="Shopping cart">
+      <div class="cart-header">
+        <h2 class="cart-title">Your Cart</h2>
+        <button type="button" class="btn btn-ghost" data-close-cart>Close</button>
+      </div>
+      <div class="cart-body">
+        <p class="cart-empty" data-cart-empty>Your cart is currently empty.</p>
+        <div class="cart-items" data-cart-items></div>
+      </div>
+      <div class="cart-footer">
+        <div class="cart-total">
+          <span>Subtotal</span>
+          <strong data-cart-total>$0</strong>
+        </div>
+        <a href="cart.html" class="btn btn-outline">Open Cart</a>
+        <a href="checkout.html" class="btn btn-primary">Checkout</a>
+        <p class="cart-note">Shipping and tax calculated at checkout.</p>
+      </div>
+    </aside>
+
+    <script src="scripts/products.js" defer></script>
+    <script src="scripts/main.js" defer></script>
+    <script src="scripts/notifications.js" defer></script>
+    <script src="scripts/account.js" defer></script>
+  </body>
+</html>

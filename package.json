@@ -1,0 +1,12 @@
+{
+  "name": "genesis-core-site",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Genesis Core storefront",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "stripe": "^18.6.0"
+  }
+}
