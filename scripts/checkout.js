@@ -830,7 +830,7 @@
 
       var summary = renderSummary();
       latestSummary = summary;
-      var paymentReady = await ensurePaymentElement(summary, { force: true });
+      var paymentReady = await ensurePaymentElement(summary, { force: false });
       latestSummary = renderSummary();
       if (!paymentReady || !stripeState.ready || !stripeState.stripe || !stripeState.paymentElement || !stripeState.elements) {
         setFeedback('Payment methods are unavailable. Configure Stripe and retry.', true);
