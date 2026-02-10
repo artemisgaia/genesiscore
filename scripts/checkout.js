@@ -1,5 +1,6 @@
 (function () {
   var ORDERS_KEY = 'genesis_core_orders_v1';
+  var PENDING_ORDER_KEY = 'genesis_core_pending_order_v1';
 
   function readOrders() {
     try {
@@ -12,6 +13,22 @@
 
   function writeOrders(orders) {
     localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
+  }
+
+  function savePendingOrder(order) {
+    try {
+      localStorage.setItem(PENDING_ORDER_KEY, JSON.stringify(order || null));
+    } catch (error) {
+      // no-op
+    }
+  }
+
+  function clearPendingOrder() {
+    try {
+      localStorage.removeItem(PENDING_ORDER_KEY);
+    } catch (error) {
+      // no-op
+    }
   }
 
   function createOrderId() {
@@ -412,16 +429,22 @@
     var serviceSelect = document.querySelector('select[name="shipping_service"]');
     var removeUnavailableButton = document.querySelector('[data-remove-unavailable-checkout]');
     var submitButton = document.querySelector('[data-checkout-submit]') || (form ? form.querySelector('button[type="submit"]') : null);
-    var stripeCardMount = document.querySelector('[data-stripe-card]');
+    var stripePaymentMount = document.querySelector('[data-stripe-card]');
     var stripeFeedbackNode = document.querySelector('[data-stripe-feedback]');
     var stripeState = {
       stripe: null,
       elements: null,
-      card: null,
-      ready: false
+      paymentElement: null,
+      ready: false,
+      paymentElementReady: false,
+      activeSignature: '',
+      activePaymentIntentId: '',
+      activeClientSecret: ''
     };
     var latestSummary = null;
     var isSubmitting = false;
+    var refreshPaymentTimer = null;
+    var checkoutOrderDraftId = createOrderId();
 
     if (!form || !subtotalNode || !shippingNode || !taxNode || !totalNode || !countrySelect || !serviceSelect) {
       return;
@@ -431,6 +454,41 @@
       if (!stripeFeedbackNode) return;
       stripeFeedbackNode.textContent = message || '';
       stripeFeedbackNode.style.color = isError ? 'var(--accent)' : 'var(--success)';
+    }
+
+    function serializeOrderItems(items) {
+      var raw = (Array.isArray(items) ? items : [])
+        .map(function (item) {
+          return String(item.id || '').trim() + ':' + Number(item.quantity || 0);
+        })
+        .filter(Boolean)
+        .join('|');
+      return raw.slice(0, 480);
+    }
+
+    function getPaymentSignature(summary, cartItems, country, service) {
+      var amountCents = Math.round(Number(summary && summary.total || 0) * 100);
+      var itemSignature = serializeOrderItems(cartItems);
+      return [amountCents, String(country || ''), String(service || ''), itemSignature].join('::');
+    }
+
+    function clearPaymentElementState() {
+      if (stripeState.paymentElement) {
+        try {
+          stripeState.paymentElement.unmount();
+        } catch (error) {
+          // no-op
+        }
+      }
+      stripeState.paymentElement = null;
+      stripeState.elements = null;
+      stripeState.paymentElementReady = false;
+      stripeState.activeSignature = '';
+      stripeState.activePaymentIntentId = '';
+      stripeState.activeClientSecret = '';
+      if (stripePaymentMount) {
+        stripePaymentMount.innerHTML = '';
+      }
     }
 
     function updateSubmitButton(summary) {
@@ -443,7 +501,7 @@
         summary.subtotal > 0 &&
         summary.shipping &&
         summary.shipping.status === 'ok' &&
-        stripeState.ready;
+        stripeState.paymentElementReady;
       submitButton.disabled = !canSubmit;
     }
 
@@ -452,7 +510,7 @@
         setStripeFeedback('Stripe SDK did not load. Refresh and try again.', true);
         return;
       }
-      if (!stripeCardMount) {
+      if (!stripePaymentMount) {
         setStripeFeedback('Payment field missing on page.', true);
         return;
       }
@@ -469,22 +527,98 @@
         }
 
         stripeState.stripe = window.Stripe(config.publishableKey);
-        stripeState.elements = stripeState.stripe.elements();
-        stripeState.card = stripeState.elements.create('card', {
-          hidePostalCode: true
-        });
-        stripeState.card.mount(stripeCardMount);
-        stripeState.card.on('change', function (event) {
-          if (event && event.error) {
-            setStripeFeedback(event.error.message || 'Card details are invalid.', true);
-            return;
-          }
-          setStripeFeedback('', false);
-        });
         stripeState.ready = true;
       } catch (error) {
         setStripeFeedback(error && error.message ? error.message : 'Unable to initialize Stripe.', true);
       }
+    }
+
+    async function ensurePaymentElement(summary, options) {
+      var opts = options || {};
+      if (!stripeState.ready || !stripeState.stripe) {
+        stripeState.paymentElementReady = false;
+        updateSubmitButton(summary);
+        return false;
+      }
+
+      if (!summary || !summary.shipping || summary.shipping.status !== 'ok' || summary.total == null) {
+        clearPaymentElementState();
+        updateSubmitButton(summary);
+        return false;
+      }
+
+      var cart = window.GenesisCore.readCart();
+      var cartItems = mapOrderItems(cart);
+      var country = String(countrySelect.value || '').trim();
+      var service = String(serviceSelect.value || 'regular').trim();
+      var signature = getPaymentSignature(summary, cartItems, country, service);
+
+      if (!opts.force && signature && signature === stripeState.activeSignature && stripeState.paymentElementReady) {
+        return true;
+      }
+
+      try {
+        stripeState.paymentElementReady = false;
+        updateSubmitButton(summary);
+        setStripeFeedback('Loading payment methods...', false);
+
+        var payload = await fetchJson('/api/create-payment-intent', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json'
+          },
+          body: JSON.stringify({
+            amountCents: Math.round(Number(summary.total || 0) * 100),
+            currency: 'usd',
+            email: String((document.querySelector('input[name="email"]') || {}).value || '').trim(),
+            orderDraftId: checkoutOrderDraftId,
+            country: country,
+            shippingLabel: summary.shipping.label,
+            shippingService: summary.shipping.service,
+            items: cartItems
+          })
+        });
+
+        clearPaymentElementState();
+        stripeState.elements = stripeState.stripe.elements({
+          clientSecret: payload.clientSecret
+        });
+        stripeState.paymentElement = stripeState.elements.create('payment', {
+          layout: 'tabs'
+        });
+        stripeState.paymentElement.mount(stripePaymentMount);
+        stripeState.paymentElement.on('change', function (event) {
+          if (event && event.error) {
+            setStripeFeedback(event.error.message || 'Payment details are invalid.', true);
+            return;
+          }
+          setStripeFeedback('', false);
+        });
+
+        stripeState.activePaymentIntentId = String(payload.paymentIntentId || '');
+        stripeState.activeClientSecret = String(payload.clientSecret || '');
+        stripeState.activeSignature = signature;
+        stripeState.paymentElementReady = true;
+        setStripeFeedback('Payment methods ready.', false);
+        updateSubmitButton(summary);
+        return true;
+      } catch (error) {
+        clearPaymentElementState();
+        setStripeFeedback(error && error.message ? error.message : 'Unable to load payment methods.', true);
+        updateSubmitButton(summary);
+        return false;
+      }
+    }
+
+    function schedulePaymentElementRefresh(force) {
+      if (refreshPaymentTimer) {
+        clearTimeout(refreshPaymentTimer);
+      }
+      refreshPaymentTimer = setTimeout(async function () {
+        await ensurePaymentElement(latestSummary, { force: Boolean(force) });
+        latestSummary = renderSummary();
+      }, 220);
     }
 
     prefillFromAccount();
@@ -632,6 +766,7 @@
 
     latestSummary = renderSummary();
     await initializeStripe();
+    await ensurePaymentElement(latestSummary, { force: true });
     latestSummary = renderSummary();
 
     function onShippingInputChange() {
@@ -640,6 +775,7 @@
       setFeedback('', false);
       setStripeFeedback('', false);
       latestSummary = renderSummary();
+      schedulePaymentElementRefresh(false);
     }
 
     countrySelect.addEventListener('change', onShippingInputChange);
@@ -666,6 +802,7 @@
           setFeedback('No undeliverable items found for this country.', false);
         }
         latestSummary = renderSummary();
+        schedulePaymentElementRefresh(true);
       });
     }
 
@@ -691,13 +828,15 @@
         return;
       }
 
-      if (!stripeState.ready || !stripeState.stripe || !stripeState.card) {
-        setFeedback('Card checkout is unavailable. Configure Stripe keys and retry.', true);
+      var summary = renderSummary();
+      latestSummary = summary;
+      var paymentReady = await ensurePaymentElement(summary, { force: true });
+      latestSummary = renderSummary();
+      if (!paymentReady || !stripeState.ready || !stripeState.stripe || !stripeState.paymentElement || !stripeState.elements) {
+        setFeedback('Payment methods are unavailable. Configure Stripe and retry.', true);
         return;
       }
 
-      var summary = renderSummary();
-      latestSummary = summary;
       if (summary.shipping.status === 'blocked') {
         if (summary.shipping.reasonCode === 'US_ONLY_PRODUCT') {
           setFeedback(summary.shipping.message || 'Selected destination cannot receive US-only items in cart.', true);
@@ -718,7 +857,7 @@
       }
 
       var formData = new FormData(form);
-      var orderId = createOrderId();
+      var orderId = checkoutOrderDraftId;
       var name = String(formData.get('full_name') || '').trim();
       var email = String(formData.get('email') || '').trim();
       var country = String(formData.get('country') || '').trim();
@@ -732,49 +871,7 @@
       setStripeFeedback('', false);
 
       try {
-        var amountCents = Math.round(Number(summary.total || 0) * 100);
-        var paymentIntentPayload = await fetchJson('/api/create-payment-intent', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json'
-          },
-          body: JSON.stringify({
-            amountCents: amountCents,
-            currency: 'usd',
-            email: email,
-            orderDraftId: orderId,
-            country: country,
-            shippingLabel: summary.shipping.label,
-            shippingService: summary.shipping.service
-          })
-        });
-
-        var confirmation = await stripeState.stripe.confirmCardPayment(paymentIntentPayload.clientSecret, {
-          payment_method: {
-            card: stripeState.card,
-            billing_details: {
-              name: name,
-              email: email,
-              address: {
-                line1: address,
-                city: cityRegion,
-                postal_code: postalCode
-              }
-            }
-          }
-        });
-
-        if (confirmation.error) {
-          throw new Error(confirmation.error.message || 'Payment was not authorized.');
-        }
-
-        var paymentIntent = confirmation.paymentIntent;
-        if (!paymentIntent || paymentIntent.status !== 'succeeded') {
-          throw new Error('Payment did not complete. Status: ' + (paymentIntent ? paymentIntent.status : 'unknown'));
-        }
-
-        var order = {
+        var pendingOrder = {
           id: orderId,
           createdAt: new Date().toISOString(),
           userId:
@@ -799,14 +896,47 @@
           shipping: round2(summary.shipping.amount),
           tax: summary.tax,
           total: summary.total,
+          status: 'pending_payment',
+          paymentIntentId: stripeState.activePaymentIntentId
+        };
+        savePendingOrder(pendingOrder);
+
+        var returnUrl =
+          window.location.origin +
+          '/order-confirmation.html?order=' +
+          encodeURIComponent(orderId);
+
+        var confirmation = await stripeState.stripe.confirmPayment({
+          elements: stripeState.elements,
+          confirmParams: {
+            return_url: returnUrl,
+            receipt_email: email
+          },
+          redirect: 'if_required'
+        });
+
+        if (confirmation.error) {
+          throw new Error(confirmation.error.message || 'Payment was not authorized.');
+        }
+
+        var paymentIntent = confirmation.paymentIntent;
+        if (
+          !paymentIntent ||
+          ['succeeded', 'processing', 'requires_capture'].indexOf(String(paymentIntent.status || '')) === -1
+        ) {
+          throw new Error('Payment did not complete. Status: ' + (paymentIntent ? paymentIntent.status : 'unknown'));
+        }
+
+        var order = Object.assign({}, pendingOrder, {
           paymentStatus: paymentIntent.status,
           paymentIntentId: paymentIntent.id,
-          status: 'paid'
-        };
+          status: paymentIntent.status === 'succeeded' ? 'paid' : 'processing'
+        });
 
         var orders = readOrders();
         orders.unshift(order);
         writeOrders(orders.slice(0, 200));
+        clearPendingOrder();
 
         if (window.GenesisNotifications) {
           window.GenesisNotifications.queueOrderFlow({
@@ -824,6 +954,7 @@
         window.location.href = 'order-confirmation.html?order=' + encodeURIComponent(order.id);
       } catch (error) {
         setFeedback(error && error.message ? error.message : 'Payment could not be completed.', true);
+        clearPendingOrder();
       } finally {
         isSubmitting = false;
         latestSummary = renderSummary();

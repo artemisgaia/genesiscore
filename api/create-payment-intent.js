@@ -32,6 +32,29 @@ function toSafeString(value, maxLen) {
   return text.slice(0, maxLen || 255);
 }
 
+function normalizeItems(items) {
+  return (Array.isArray(items) ? items : [])
+    .map(function (item) {
+      return {
+        id: toSafeString(item && item.id, 64),
+        name: toSafeString(item && item.name, 120),
+        quantity: Math.max(0, Number(item && item.quantity || 0))
+      };
+    })
+    .filter(function (item) {
+      return item.id && item.quantity > 0;
+    });
+}
+
+function toItemsDigest(items) {
+  return items
+    .map(function (item) {
+      return item.id + ':' + item.quantity;
+    })
+    .join('|')
+    .slice(0, 480);
+}
+
 module.exports = async function createPaymentIntentHandler(req, res) {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   res.setHeader('Cache-Control', 'no-store, max-age=0');
@@ -64,6 +87,11 @@ module.exports = async function createPaymentIntentHandler(req, res) {
     var country = toSafeString(body && body.country, 80);
     var shippingLabel = toSafeString(body && body.shippingLabel, 120);
     var shippingService = toSafeString(body && body.shippingService, 40);
+    var normalizedItems = normalizeItems(body && body.items);
+    var itemDigest = toItemsDigest(normalizedItems);
+    var itemCount = normalizedItems.reduce(function (sum, item) {
+      return sum + item.quantity;
+    }, 0);
 
     if (!Number.isFinite(amountCents) || amountCents < 50 || amountCents > 25000000) {
       res.status(400).json({ error: 'Invalid amount' });
@@ -86,7 +114,10 @@ module.exports = async function createPaymentIntentHandler(req, res) {
         orderDraftId: orderDraftId || '',
         destinationCountry: country || '',
         shippingLabel: shippingLabel || '',
-        shippingService: shippingService || ''
+        shippingService: shippingService || '',
+        itemCount: String(itemCount || 0),
+        itemDigest: itemDigest || '',
+        preferredMethods: 'card,klarna,link,cashapp,amazon_pay'
       }
     });
 
