@@ -35,10 +35,13 @@ function toSafeString(value, maxLen) {
 function normalizeItems(items) {
   return (Array.isArray(items) ? items : [])
     .map(function (item) {
+      var rawPrice = Number(item && item.price);
+      var rawQuantity = Number(item && item.quantity);
       return {
         id: toSafeString(item && item.id, 64),
         name: toSafeString(item && item.name, 120),
-        quantity: Math.max(0, Number(item && item.quantity || 0))
+        price: Number.isFinite(rawPrice) ? Math.max(0, rawPrice) : 0,
+        quantity: Number.isFinite(rawQuantity) ? Math.max(0, rawQuantity) : 0
       };
     })
     .filter(function (item) {
@@ -53,6 +56,22 @@ function toItemsDigest(items) {
     })
     .join('|')
     .slice(0, 480);
+}
+
+function toItemsPreview(items) {
+  return items
+    .map(function (item) {
+      var lineTotal = item.price * item.quantity;
+      return item.name + ' x' + item.quantity + ' ($' + lineTotal.toFixed(2) + ')';
+    })
+    .join(' | ')
+    .slice(0, 480);
+}
+
+function toMetadataAmount(value) {
+  var amount = Number(value);
+  if (!Number.isFinite(amount) || amount < 0) return '';
+  return amount.toFixed(2);
 }
 
 module.exports = async function createPaymentIntentHandler(req, res) {
@@ -87,8 +106,20 @@ module.exports = async function createPaymentIntentHandler(req, res) {
     var country = toSafeString(body && body.country, 80);
     var shippingLabel = toSafeString(body && body.shippingLabel, 120);
     var shippingService = toSafeString(body && body.shippingService, 40);
+    var subtotal = Number(body && body.subtotal);
+    var shippingAmount = Number(body && body.shippingAmount);
+    var discount = Number(body && body.discount);
+    var customerName = toSafeString(body && body.customerName, 120);
+    var customerPhone = toSafeString(body && body.customerPhone, 40);
+    var shippingAddress = body && typeof body.shippingAddress === 'object' ? body.shippingAddress : {};
+    var shippingLine1 = toSafeString(shippingAddress.line1, 120);
+    var shippingCity = toSafeString(shippingAddress.city, 80);
+    var shippingState = toSafeString(shippingAddress.state, 80);
+    var shippingPostalCode = toSafeString(shippingAddress.postalCode, 32);
+    var shippingCountryCode = toSafeString(shippingAddress.country, 2).toUpperCase();
     var normalizedItems = normalizeItems(body && body.items);
     var itemDigest = toItemsDigest(normalizedItems);
+    var itemPreview = toItemsPreview(normalizedItems);
     var itemCount = normalizedItems.reduce(function (sum, item) {
       return sum + item.quantity;
     }, 0);
@@ -109,16 +140,38 @@ module.exports = async function createPaymentIntentHandler(req, res) {
       currency: currency,
       receipt_email: email || undefined,
       automatic_payment_methods: { enabled: true },
-      description: 'Genesis Core Order',
+      description: orderDraftId ? 'Genesis Core Order ' + orderDraftId : 'Genesis Core Order',
       metadata: {
         orderDraftId: orderDraftId || '',
         destinationCountry: country || '',
         shippingLabel: shippingLabel || '',
         shippingService: shippingService || '',
+        subtotalUsd: toMetadataAmount(subtotal),
+        shippingUsd: toMetadataAmount(shippingAmount),
+        discountUsd: toMetadataAmount(discount),
+        totalUsd: toMetadataAmount(amountCents / 100),
+        customerName: customerName || '',
+        customerPhone: customerPhone || '',
+        shippingPostalCode: shippingPostalCode || '',
         itemCount: String(itemCount || 0),
         itemDigest: itemDigest || '',
+        itemPreview: itemPreview || '',
         preferredMethods: 'card,klarna,link,cashapp,amazon_pay'
-      }
+      },
+      shipping:
+        customerName && shippingLine1 && shippingCountryCode
+          ? {
+              name: customerName,
+              phone: customerPhone || undefined,
+              address: {
+                line1: shippingLine1,
+                city: shippingCity || undefined,
+                state: shippingState || undefined,
+                postal_code: shippingPostalCode || undefined,
+                country: shippingCountryCode
+              }
+            }
+          : undefined
     });
 
     res.status(200).json({

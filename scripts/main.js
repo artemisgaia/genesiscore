@@ -1005,8 +1005,7 @@
   }
 
   function getTimeBasedTheme() {
-    var hour = new Date().getHours();
-    return hour >= 7 && hour < 19 ? 'light' : 'dark';
+    return 'dark';
   }
 
   function getStoredTheme() {
@@ -1039,6 +1038,10 @@
   }
 
   function setupTheme() {
+    var storedTheme = getStoredTheme();
+    var initialTheme = storedTheme || 'dark';
+    applyTheme(initialTheme, false);
+
     document.querySelectorAll('[data-mobile-menu]').forEach(function (menu) {
       if (menu.querySelector('.mobile-theme-toggle')) {
         return;
@@ -1048,13 +1051,9 @@
       mobileToggle.type = 'button';
       mobileToggle.className = 'btn btn-outline theme-toggle mobile-theme-toggle';
       mobileToggle.setAttribute('data-theme-toggle', '');
-      mobileToggle.textContent = 'Dark Mode';
+      mobileToggle.textContent = 'Light Mode';
       menu.appendChild(mobileToggle);
     });
-
-    var storedTheme = getStoredTheme();
-    var initialTheme = storedTheme || document.documentElement.getAttribute('data-theme') || getTimeBasedTheme();
-    applyTheme(initialTheme, false);
 
     document.querySelectorAll('[data-theme-toggle]').forEach(function (button) {
       button.addEventListener('click', function () {
@@ -1711,6 +1710,16 @@
       menu.hidden = expanded;
     });
 
+    document.addEventListener('click', function (event) {
+      if (menu.hidden || !menu.classList.contains('is-open')) {
+        return;
+      }
+      if (event.target === menuButton || menuButton.contains(event.target) || menu.contains(event.target)) {
+        return;
+      }
+      closeMenu();
+    });
+
     menu.querySelectorAll('a').forEach(function (link) {
       link.addEventListener('click', closeMenu);
     });
@@ -1785,11 +1794,11 @@
       rail.innerHTML =
         '<p class="payment-rail__label">Accepted payments</p>' +
         '<div class="payment-rail__list">' +
-        '<span class="payment-chip"><svg class="payment-chip__icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5.5" width="17" height="13" rx="2.5"></rect><path d="M3.5 10.2h17"></path></svg><span>Card</span></span>' +
-        '<span class="payment-chip"><svg class="payment-chip__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19c-3.3 0-5.7-1.8-5.7-4.5 0-2 1.3-3.7 3.2-4.3-.2-.4-.3-.8-.3-1.3 0-1.7 1.4-3.1 3.1-3.1 1.2 0 2.3.7 2.8 1.8.3-.1.6-.1.9-.1 1.9 0 3.5 1.6 3.5 3.6 0 2.7-2.6 7.9-7.5 7.9z"></path><path d="M14.6 5.1c.9-.1 1.8-.8 2.1-1.8"></path></svg><span>Apple Pay</span></span>' +
-        '<span class="payment-chip"><svg class="payment-chip__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.2 12a7.8 7.8 0 1 1 7.8 7.8"></path><path d="M4.2 12h7.3"></path><path d="M12 7.1v9.8"></path></svg><span>Google Pay</span></span>' +
-        '<span class="payment-chip"><svg class="payment-chip__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.2 7.3H7.9a3.2 3.2 0 0 0 0 6.4h2.5"></path><path d="M13.8 16.7h2.3a3.2 3.2 0 0 0 0-6.4h-2.5"></path><path d="M9.4 12h5.2"></path></svg><span>Link</span></span>' +
-        '<span class="payment-chip"><svg class="payment-chip__icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4.2" y="4.2" width="15.6" height="15.6" rx="3"></rect><path d="M9 16V8"></path><path d="M9 12h6"></path><path d="M15 16l-3-4 3-4"></path></svg><span>Klarna</span></span>' +
+        '<span class="payment-chip">Card</span>' +
+        '<span class="payment-chip">Apple Pay</span>' +
+        '<span class="payment-chip">Google Pay</span>' +
+        '<span class="payment-chip">Link</span>' +
+        '<span class="payment-chip">Klarna</span>' +
         '</div>';
 
       var footerBottom = container.querySelector('.footer-bottom');
@@ -1798,6 +1807,30 @@
       } else {
         container.appendChild(rail);
       }
+    });
+  }
+
+  function enhancePDPExperience() {
+    var pdp = document.querySelector('.pdp-core');
+    if (!pdp) return;
+
+    if (!pdp.querySelector('.pdp-conversion-strip')) {
+      var strip = document.createElement('div');
+      strip.className = 'pdp-conversion-strip';
+      strip.innerHTML =
+        '<span>Third-party lot checks</span>' +
+        '<span>Encrypted Stripe checkout</span>' +
+        '<span>Pause/skip/cancel subscription</span>';
+      var actions = pdp.querySelector('.pdp-actions');
+      if (actions) {
+        actions.insertAdjacentElement('afterend', strip);
+      } else {
+        pdp.appendChild(strip);
+      }
+    }
+
+    document.querySelectorAll('.pdp-related-grid .product-card').forEach(function (card) {
+      card.classList.add('pdp-related-card');
     });
   }
 
@@ -1951,6 +1984,7 @@
     optimizeImages();
     tunePdpLongformReadability();
     markStickyPDP();
+    enhancePDPExperience();
     setupAccountEntry();
     setupLocationControls();
     setupTheme();

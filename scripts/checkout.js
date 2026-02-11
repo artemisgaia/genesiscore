@@ -1,6 +1,62 @@
 (function () {
   var ORDERS_KEY = 'genesis_core_orders_v1';
   var PENDING_ORDER_KEY = 'genesis_core_pending_order_v1';
+  var COUNTRY_CODE_BY_NAME = {
+    'United States': 'US',
+    Canada: 'CA',
+    Mexico: 'MX',
+    Australia: 'AU',
+    Austria: 'AT',
+    Belgium: 'BE',
+    Bulgaria: 'BG',
+    Croatia: 'HR',
+    Cyprus: 'CY',
+    Czechia: 'CZ',
+    Denmark: 'DK',
+    Estonia: 'EE',
+    Finland: 'FI',
+    France: 'FR',
+    Germany: 'DE',
+    Greece: 'GR',
+    Hungary: 'HU',
+    Ireland: 'IE',
+    Italy: 'IT',
+    Latvia: 'LV',
+    Lithuania: 'LT',
+    Luxembourg: 'LU',
+    Malta: 'MT',
+    Netherlands: 'NL',
+    Norway: 'NO',
+    Poland: 'PL',
+    Portugal: 'PT',
+    Romania: 'RO',
+    Slovakia: 'SK',
+    Slovenia: 'SI',
+    Sweden: 'SE',
+    Switzerland: 'CH',
+    'United Kingdom': 'GB',
+    Albania: 'AL',
+    'Bosnia and Herzegovina': 'BA',
+    Georgia: 'GE',
+    Gibraltar: 'GI',
+    Iceland: 'IS',
+    Liechtenstein: 'LI',
+    'North Macedonia': 'MK',
+    Montenegro: 'ME',
+    Serbia: 'RS',
+    Turkey: 'TR',
+    Moldova: 'MD',
+    Spain: 'ES',
+    'Saudi Arabia': 'SA',
+    'United Arab Emirates': 'AE',
+    Egypt: 'EG',
+    Israel: 'IL',
+    Japan: 'JP',
+    'South Korea': 'KR',
+    Thailand: 'TH',
+    Qatar: 'QA',
+    Philippines: 'PH'
+  };
 
   function readOrders() {
     try {
@@ -61,6 +117,25 @@
 
   function round2(value) {
     return Math.round(Number(value || 0) * 100) / 100;
+  }
+
+  function resolveCountryCode(countryName) {
+    return COUNTRY_CODE_BY_NAME[String(countryName || '').trim()] || '';
+  }
+
+  function splitCityRegion(text) {
+    var value = String(text || '').trim();
+    if (!value) {
+      return { city: '', state: '' };
+    }
+    if (value.indexOf(',') !== -1) {
+      var parts = value.split(',');
+      return {
+        city: String(parts[0] || '').trim(),
+        state: String(parts.slice(1).join(',') || '').trim()
+      };
+    }
+    return { city: value, state: '' };
   }
 
   function mapOrderItems(cart) {
@@ -597,6 +672,8 @@
       var cart = window.GenesisCore.readCart();
       var cartItems = mapOrderItems(cart);
       var country = String(countrySelect.value || '').trim();
+      var countryCode = resolveCountryCode(country);
+      var cityRegionParts = splitCityRegion(cityRegionInput ? cityRegionInput.value : '');
       var service = String(serviceSelect.value || 'regular').trim();
       var signature = getPaymentSignature(summary, cartItems, country, service);
 
@@ -623,7 +700,19 @@
             country: country,
             shippingLabel: summary.shipping.label,
             shippingService: summary.shipping.service,
-            items: cartItems
+            subtotal: Number(summary.subtotal || 0),
+            shippingAmount: Number(summary.shipping && summary.shipping.amount || 0),
+            discount: Number(summary.discount || 0),
+            items: cartItems,
+            customerName: String((document.querySelector('input[name="full_name"]') || {}).value || '').trim(),
+            customerPhone: String((document.querySelector('input[name="phone"]') || {}).value || '').trim(),
+            shippingAddress: {
+              line1: String((addressInput && addressInput.value) || '').trim(),
+              city: cityRegionParts.city,
+              state: cityRegionParts.state,
+              postalCode: String((postalCodeInput && postalCodeInput.value) || '').trim(),
+              country: countryCode
+            }
           })
         });
 
@@ -920,6 +1009,8 @@
       var cityRegion = String(formData.get('city_region') || '').trim();
       var postalCode = String(formData.get('postal_code') || '').trim();
       var phone = String(formData.get('phone') || '').trim();
+      var countryCode = resolveCountryCode(country);
+      var cityRegionParts = splitCityRegion(cityRegion);
 
       isSubmitting = true;
       updateSubmitButton(summary);
@@ -967,7 +1058,32 @@
           elements: stripeState.elements,
           confirmParams: {
             return_url: returnUrl,
-            receipt_email: email
+            receipt_email: email,
+            shipping: {
+              name: name || undefined,
+              phone: phone || undefined,
+              address: {
+                line1: address || undefined,
+                city: cityRegionParts.city || undefined,
+                state: cityRegionParts.state || undefined,
+                postal_code: postalCode || undefined,
+                country: countryCode || undefined
+              }
+            },
+            payment_method_data: {
+              billing_details: {
+                name: name || undefined,
+                email: email || undefined,
+                phone: phone || undefined,
+                address: {
+                  line1: address || undefined,
+                  city: cityRegionParts.city || undefined,
+                  state: cityRegionParts.state || undefined,
+                  postal_code: postalCode || undefined,
+                  country: countryCode || undefined
+                }
+              }
+            }
           },
           redirect: 'if_required'
         });

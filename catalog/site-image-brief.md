@@ -49,3 +49,7 @@ Total product files needed: `444` images.
 - Supplement facts target: 1500x2000 (high readability).
 - Label closeup target: 1200x1200.
 - Use neutral background, consistent lighting, no hard shadows.
+
+## 8) AI generation prompts (non-product)
+- Prompt pack file: `catalog/ai-image-prompts.md`
+- Scope: Home, Science, Quality, About, Contact, Quiz, Logistics, B2B, OG cover, and policy/support visuals.

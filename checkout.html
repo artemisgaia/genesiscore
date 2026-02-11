@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -13,11 +13,11 @@
           var key = 'genesis_core_theme_v1';
           var saved = localStorage.getItem(key);
           var hour = new Date().getHours();
-          var autoTheme = hour >= 7 && hour < 19 ? 'light' : 'dark';
+          var autoTheme = 'dark';
           var theme = saved === 'light' || saved === 'dark' ? saved : autoTheme;
           document.documentElement.setAttribute('data-theme', theme);
         } catch (error) {
-          document.documentElement.setAttribute('data-theme', 'light');
+          document.documentElement.setAttribute('data-theme', 'dark');
         }
       })();
     </script>
@@ -181,6 +181,11 @@
                 <p class="results-row" style="margin-top: 0.2rem">Stripe payment details</p>
                 <div class="stripe-card-field" data-stripe-card aria-label="Payment method details"></div>
                 <p class="form-note">Payment methods are shown automatically when eligible for this checkout.</p>
+                <div class="checkout-assurance" aria-label="Checkout assurances">
+                  <span>TLS-secured data transit</span>
+                  <span>No card data stored on Genesis Core</span>
+                  <span>Order receipt + shipping updates by email</span>
+                </div>
                 <p class="auth-feedback" data-stripe-feedback aria-live="polite"></p>
               </div>
               <button class="btn btn-primary" type="submit" data-checkout-submit>Place Order</button>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -31,11 +31,11 @@
           var key = 'genesis_core_theme_v1';
           var saved = localStorage.getItem(key);
           var hour = new Date().getHours();
-          var autoTheme = hour >= 7 && hour < 19 ? 'light' : 'dark';
+          var autoTheme = 'dark';
           var theme = saved === 'light' || saved === 'dark' ? saved : autoTheme;
           document.documentElement.setAttribute('data-theme', theme);
         } catch (error) {
-          document.documentElement.setAttribute('data-theme', 'light');
+          document.documentElement.setAttribute('data-theme', 'dark');
         }
       })();
     </script>

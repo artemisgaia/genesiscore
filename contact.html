@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -25,11 +25,11 @@
           var key = 'genesis_core_theme_v1';
           var saved = localStorage.getItem(key);
           var hour = new Date().getHours();
-          var autoTheme = hour >= 7 && hour < 19 ? 'light' : 'dark';
+          var autoTheme = 'dark';
           var theme = saved === 'light' || saved === 'dark' ? saved : autoTheme;
           document.documentElement.setAttribute('data-theme', theme);
         } catch (error) {
-          document.documentElement.setAttribute('data-theme', 'light');
+          document.documentElement.setAttribute('data-theme', 'dark');
         }
       })();
     </script>
@@ -125,6 +125,34 @@
               <p class="form-feedback" data-form-feedback></p>
             </form>
           </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="section-head">
+            <div>
+              <span class="eyebrow">Support Lanes</span>
+              <h2 class="section-title">Route requests to the right desk.</h2>
+            </div>
+          </div>
+          <div class="support-lane-grid">
+            <article class="support-lane-card">
+              <h3>Order Operations</h3>
+              <p>Tracking, address updates, shipping constraints, and delivery confirmations.</p>
+              <p class="support-lane-card__meta">Target response: same business day</p>
+            </article>
+            <article class="support-lane-card">
+              <h3>Protocol Guidance</h3>
+              <p>Category selection support, stack sequencing, and usage timing clarification.</p>
+              <p class="support-lane-card__meta">Target response: within one business day</p>
+            </article>
+            <article class="support-lane-card">
+              <h3>Partnerships</h3>
+              <p>Corporate wellness, executive programs, and strategic integrations.</p>
+              <p class="support-lane-card__meta">Target response: within two business days</p>
+            </article>
+          </div>
         </div>
       </section>
 
