@@ -642,12 +642,26 @@ button:focus-visible {
 }
 
 .trust-strip {
+  position: relative;
+  overflow: clip;
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
-  background: var(--surface-soft);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--surface-soft) 88%, transparent), color-mix(in srgb, var(--surface) 92%, transparent)),
+    url('../assets/home/cta-background.avif') center / cover no-repeat;
+}
+
+.trust-strip::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--surface) 62%, transparent);
+  pointer-events: none;
 }
 
 .trust-strip .container {
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1rem;
@@ -890,9 +904,41 @@ button:focus-visible {
   box-shadow: var(--shadow-sm);
 }
 
+.panel-visual {
+  margin: 0 0 0.95rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: clip;
+  background: var(--surface-soft);
+}
+
+.panel-visual img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  display: block;
+  object-fit: cover;
+}
+
+.panel-visual--portrait img {
+  aspect-ratio: 4 / 5;
+}
+
+.panel-visual--wide img {
+  aspect-ratio: 21 / 9;
+}
+
 .panel-dark {
   background: linear-gradient(165deg, var(--brand), var(--brand-strong));
   border: 1px solid color-mix(in srgb, var(--brand-strong) 70%, #ffffff);
+}
+
+.panel-dark .panel-visual {
+  border-color: color-mix(in srgb, #ffffff 26%, transparent);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.panel-dark .panel-visual img {
+  filter: saturate(0.9) contrast(1.03);
 }
 
 .panel-dark,
@@ -1441,6 +1487,50 @@ input[type='search']:focus {
 
 .page-hero {
   padding: 4.3rem 0 3.5rem;
+}
+
+.page-hero--shipping,
+.page-hero--ingredients,
+.page-hero--compliance {
+  position: relative;
+  overflow: clip;
+}
+
+.page-hero--shipping::before,
+.page-hero--ingredients::before,
+.page-hero--compliance::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.page-hero--shipping::before {
+  background:
+    linear-gradient(180deg, rgba(8, 13, 19, 0.5), rgba(8, 13, 19, 0.08)),
+    url('../assets/shipping/logistics-hero.avif') center / cover no-repeat;
+  opacity: 0.18;
+}
+
+.page-hero--ingredients::before {
+  background:
+    linear-gradient(180deg, rgba(8, 13, 19, 0.45), rgba(8, 13, 19, 0.06)),
+    url('../assets/science/data-visual.avif') center / cover no-repeat;
+  opacity: 0.14;
+}
+
+.page-hero--compliance::before {
+  background:
+    linear-gradient(180deg, rgba(8, 13, 19, 0.52), rgba(8, 13, 19, 0.08)),
+    url('../assets/legal/compliance-bg.avif') center / cover no-repeat;
+  opacity: 0.16;
+}
+
+.page-hero--shipping .container,
+.page-hero--ingredients .container,
+.page-hero--compliance .container {
+  position: relative;
+  z-index: 1;
 }
 
 .page-hero h1 {
