@@ -344,6 +344,15 @@
     var nameInput = document.querySelector('input[name="full_name"]');
     var emailInput = document.querySelector('input[name="email"]');
     var countrySelect = document.querySelector('select[name="country"]');
+    var deliveryCountry =
+      countrySelect && window.GenesisCore && window.GenesisCore.getDeliveryCountry
+        ? String(window.GenesisCore.getDeliveryCountry() || '').trim()
+        : '';
+    var deliveryOptionExists =
+      deliveryCountry &&
+      Array.prototype.some.call(countrySelect ? countrySelect.options : [], function (option) {
+        return String(option.value || '') === deliveryCountry;
+      });
 
     if (window.GenesisAccount && window.GenesisAccount.getCurrentUser) {
       var user = window.GenesisAccount.getCurrentUser();
@@ -354,6 +363,10 @@
         if (emailInput && !emailInput.value) {
           emailInput.value = user.email || '';
         }
+        if (countrySelect && deliveryOptionExists) {
+          countrySelect.value = deliveryCountry;
+          return;
+        }
         if (countrySelect && user.country) {
           countrySelect.value = user.country;
           return;
@@ -361,8 +374,8 @@
       }
     }
 
-    if (countrySelect && window.GenesisCore && window.GenesisCore.getDeliveryCountry) {
-      countrySelect.value = window.GenesisCore.getDeliveryCountry();
+    if (countrySelect && deliveryOptionExists) {
+      countrySelect.value = deliveryCountry;
     }
   }
 
@@ -384,13 +397,40 @@
     }
   }
 
-  function toggleUSRegionControl(countrySelect, usRegionSelect) {
+  function toggleUSRegionControl(countrySelect, usRegionSelect, usRegionRow) {
     if (!countrySelect || !usRegionSelect) return;
     var zone = resolveCountryZone(countrySelect, countrySelect.value);
     var enabled = zone === 'US';
     usRegionSelect.disabled = !enabled;
+    if (usRegionRow) {
+      usRegionRow.hidden = !enabled;
+    }
     if (!enabled) {
       usRegionSelect.value = 'auto';
+    }
+  }
+
+  function updatePostalFieldByCountry(countrySelect, postalLabelNode, postalInput) {
+    if (!postalInput) return;
+    var zone = resolveCountryZone(countrySelect, countrySelect ? countrySelect.value : '');
+    var isUS = zone === 'US';
+    var fieldLabel = isUS ? 'ZIP code' : 'Postal code';
+    if (postalLabelNode) {
+      postalLabelNode.textContent = fieldLabel;
+    }
+    postalInput.placeholder = fieldLabel;
+    postalInput.setAttribute('aria-label', fieldLabel);
+    postalInput.setAttribute('autocomplete', isUS ? 'shipping postal-code' : 'postal-code');
+    postalInput.setAttribute('inputmode', isUS ? 'numeric' : 'text');
+  }
+
+  function togglePhoneField(phoneToggle, phoneRow, phoneInput) {
+    if (!phoneToggle || !phoneRow || !phoneInput) return;
+    var enabled = Boolean(phoneToggle.checked);
+    phoneRow.hidden = !enabled;
+    phoneInput.disabled = !enabled;
+    if (!enabled) {
+      phoneInput.value = '';
     }
   }
 
@@ -425,21 +465,23 @@
     var usOnlyNoticeNode = document.querySelector('[data-us-only-checkout-note]');
     var countrySelect = document.querySelector('select[name="country"]');
     var usRegionSelect = document.querySelector('select[name="us_region"]');
+    var usRegionRow = document.querySelector('[data-us-region-row]');
     var addressInput = document.querySelector('input[name="address"]');
     var cityRegionInput = document.querySelector('input[name="city_region"]');
+    var postalCodeLabel = document.querySelector('label[for="checkout-postal-code"]');
     var postalCodeInput = document.querySelector('input[name="postal_code"]');
+    var phoneToggle = document.querySelector('[data-phone-toggle]');
+    var phoneRow = document.querySelector('[data-phone-row]');
+    var phoneInput = document.querySelector('input[name="phone"]');
     var serviceSelect = document.querySelector('select[name="shipping_service"]');
     var removeUnavailableButton = document.querySelector('[data-remove-unavailable-checkout]');
     var submitButton = document.querySelector('[data-checkout-submit]') || (form ? form.querySelector('button[type="submit"]') : null);
     var stripePaymentMount = document.querySelector('[data-stripe-card]');
-    var stripeAddressBlock = document.querySelector('[data-stripe-address-block]');
-    var stripeAddressMount = document.querySelector('[data-stripe-address]');
     var stripeFeedbackNode = document.querySelector('[data-stripe-feedback]');
     var stripeState = {
       stripe: null,
       elements: null,
       paymentElement: null,
-      addressElement: null,
       ready: false,
       paymentElementReady: false,
       activeSignature: '',
@@ -486,14 +528,6 @@
         }
       }
       stripeState.paymentElement = null;
-      if (stripeState.addressElement) {
-        try {
-          stripeState.addressElement.unmount();
-        } catch (error) {
-          // no-op
-        }
-      }
-      stripeState.addressElement = null;
       stripeState.elements = null;
       stripeState.paymentElementReady = false;
       stripeState.activeSignature = '';
@@ -501,30 +535,6 @@
       stripeState.activeClientSecret = '';
       if (stripePaymentMount) {
         stripePaymentMount.innerHTML = '';
-      }
-      if (stripeAddressMount) {
-        stripeAddressMount.innerHTML = '';
-      }
-      if (stripeAddressBlock) {
-        stripeAddressBlock.hidden = true;
-      }
-    }
-
-    function applyAddressFromStripe(address) {
-      var payload = address && typeof address === 'object' ? address : {};
-      var line = [payload.line1, payload.line2].filter(Boolean).join(' ').trim();
-      var cityRegion = [payload.city, payload.state].filter(Boolean).join(', ').trim();
-      var postal = String(payload.postal_code || '').trim();
-
-      if (addressInput && line) {
-        addressInput.value = line;
-      }
-      if (cityRegionInput && cityRegion) {
-        cityRegionInput.value = cityRegion;
-        cityRegionInput.dispatchEvent(new Event('input', { bubbles: true }));
-      }
-      if (postalCodeInput && postal) {
-        postalCodeInput.value = postal;
       }
     }
 
@@ -633,29 +643,6 @@
           setStripeFeedback('', false);
         });
 
-        if (stripeAddressBlock) {
-          stripeAddressBlock.hidden = country !== 'United States';
-        }
-        if (country === 'United States' && stripeAddressMount) {
-          stripeState.addressElement = stripeState.elements.create('address', {
-            mode: 'shipping',
-            allowedCountries: ['US'],
-            fields: {
-              phone: 'never'
-            }
-          });
-          stripeState.addressElement.mount(stripeAddressMount);
-          stripeState.addressElement.on('change', function (event) {
-            if (event && event.error) {
-              setStripeFeedback(event.error.message || 'Address is invalid.', true);
-              return;
-            }
-            if (event && event.value && event.value.address) {
-              applyAddressFromStripe(event.value.address);
-            }
-          });
-        }
-
         stripeState.activePaymentIntentId = String(payload.paymentIntentId || '');
         stripeState.activeClientSecret = String(payload.clientSecret || '');
         stripeState.activeSignature = signature;
@@ -683,7 +670,9 @@
 
     prefillFromAccount();
     toggleServiceOptions(countrySelect, serviceSelect);
-    toggleUSRegionControl(countrySelect, usRegionSelect);
+    toggleUSRegionControl(countrySelect, usRegionSelect, usRegionRow);
+    updatePostalFieldByCountry(countrySelect, postalCodeLabel, postalCodeInput);
+    togglePhoneField(phoneToggle, phoneRow, phoneInput);
 
     function renderUSOnlyNotice(cart) {
       if (!usOnlyNoticeNode) {
@@ -831,10 +820,8 @@
 
     function onShippingInputChange() {
       toggleServiceOptions(countrySelect, serviceSelect);
-      toggleUSRegionControl(countrySelect, usRegionSelect);
-      if (stripeAddressBlock) {
-        stripeAddressBlock.hidden = String(countrySelect.value || '').trim() !== 'United States';
-      }
+      toggleUSRegionControl(countrySelect, usRegionSelect, usRegionRow);
+      updatePostalFieldByCountry(countrySelect, postalCodeLabel, postalCodeInput);
       setFeedback('', false);
       setStripeFeedback('', false);
       latestSummary = renderSummary();
@@ -848,6 +835,11 @@
     }
     if (usRegionSelect) {
       usRegionSelect.addEventListener('change', onShippingInputChange);
+    }
+    if (phoneToggle) {
+      phoneToggle.addEventListener('change', function () {
+        togglePhoneField(phoneToggle, phoneRow, phoneInput);
+      });
     }
 
     if (removeUnavailableButton) {
@@ -927,6 +919,7 @@
       var address = String(formData.get('address') || '').trim();
       var cityRegion = String(formData.get('city_region') || '').trim();
       var postalCode = String(formData.get('postal_code') || '').trim();
+      var phone = String(formData.get('phone') || '').trim();
 
       isSubmitting = true;
       updateSubmitButton(summary);
@@ -952,6 +945,7 @@
           address: address,
           cityRegion: cityRegion,
           postalCode: postalCode,
+          phone: phone,
           items: mapOrderItems(currentCart),
           baseSubtotal: summary.baseSubtotal,
           subtotal: summary.subtotal,
