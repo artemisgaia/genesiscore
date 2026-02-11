@@ -161,12 +161,17 @@
                 <option value="regular">Shipping service: Regular</option>
                 <option value="express">Shipping service: Express</option>
               </select>
+              <div class="stripe-address-block" data-stripe-address-block hidden>
+                <p class="results-row" style="margin-top: 0.2rem">US address autocomplete</p>
+                <div class="stripe-card-field stripe-address-field" data-stripe-address aria-label="US shipping address"></div>
+                <p class="form-note">Type your address and choose a suggestion. Fields below auto-fill.</p>
+              </div>
               <label class="sr-only" for="checkout-address">Shipping address</label>
-              <input id="checkout-address" name="address" required type="text" placeholder="Shipping address" autocomplete="street-address" />
+              <input id="checkout-address" name="address" required type="text" placeholder="Shipping address" autocomplete="shipping address-line1" />
               <label class="sr-only" for="checkout-city-region">City / State / Region</label>
-              <input id="checkout-city-region" name="city_region" required type="text" placeholder="City / State / Region" autocomplete="address-level1" />
+              <input id="checkout-city-region" name="city_region" required type="text" placeholder="City / State / Region" autocomplete="shipping address-level2" />
               <label class="sr-only" for="checkout-postal-code">Postal code</label>
-              <input id="checkout-postal-code" name="postal_code" required type="text" placeholder="Postal code" autocomplete="postal-code" />
+              <input id="checkout-postal-code" name="postal_code" required type="text" placeholder="Postal code" autocomplete="shipping postal-code" />
               <div class="stripe-payment-block">
                 <p class="results-row" style="margin-top: 0.2rem">Payment details</p>
                 <div class="stripe-card-field" data-stripe-card aria-label="Payment method details"></div>

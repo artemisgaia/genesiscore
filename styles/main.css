@@ -1204,6 +1204,12 @@ input[type='search']:focus {
   margin-top: 0.24rem;
 }
 
+.stripe-address-block {
+  display: grid;
+  gap: 0.44rem;
+  margin-top: 0.1rem;
+}
+
 .stripe-card-field {
   width: 100%;
   border: 1px solid var(--line-strong);
@@ -1220,6 +1226,10 @@ input[type='search']:focus {
 
 .stripe-card-field.StripeElement--invalid {
   border-color: color-mix(in srgb, var(--accent) 60%, var(--line-strong));
+}
+
+.stripe-address-field {
+  min-height: 168px;
 }
 
 .form-grid textarea {

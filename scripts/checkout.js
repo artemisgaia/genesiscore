@@ -425,16 +425,21 @@
     var usOnlyNoticeNode = document.querySelector('[data-us-only-checkout-note]');
     var countrySelect = document.querySelector('select[name="country"]');
     var usRegionSelect = document.querySelector('select[name="us_region"]');
+    var addressInput = document.querySelector('input[name="address"]');
     var cityRegionInput = document.querySelector('input[name="city_region"]');
+    var postalCodeInput = document.querySelector('input[name="postal_code"]');
     var serviceSelect = document.querySelector('select[name="shipping_service"]');
     var removeUnavailableButton = document.querySelector('[data-remove-unavailable-checkout]');
     var submitButton = document.querySelector('[data-checkout-submit]') || (form ? form.querySelector('button[type="submit"]') : null);
     var stripePaymentMount = document.querySelector('[data-stripe-card]');
+    var stripeAddressBlock = document.querySelector('[data-stripe-address-block]');
+    var stripeAddressMount = document.querySelector('[data-stripe-address]');
     var stripeFeedbackNode = document.querySelector('[data-stripe-feedback]');
     var stripeState = {
       stripe: null,
       elements: null,
       paymentElement: null,
+      addressElement: null,
       ready: false,
       paymentElementReady: false,
       activeSignature: '',
@@ -481,6 +486,14 @@
         }
       }
       stripeState.paymentElement = null;
+      if (stripeState.addressElement) {
+        try {
+          stripeState.addressElement.unmount();
+        } catch (error) {
+          // no-op
+        }
+      }
+      stripeState.addressElement = null;
       stripeState.elements = null;
       stripeState.paymentElementReady = false;
       stripeState.activeSignature = '';
@@ -488,6 +501,30 @@
       stripeState.activeClientSecret = '';
       if (stripePaymentMount) {
         stripePaymentMount.innerHTML = '';
+      }
+      if (stripeAddressMount) {
+        stripeAddressMount.innerHTML = '';
+      }
+      if (stripeAddressBlock) {
+        stripeAddressBlock.hidden = true;
+      }
+    }
+
+    function applyAddressFromStripe(address) {
+      var payload = address && typeof address === 'object' ? address : {};
+      var line = [payload.line1, payload.line2].filter(Boolean).join(' ').trim();
+      var cityRegion = [payload.city, payload.state].filter(Boolean).join(', ').trim();
+      var postal = String(payload.postal_code || '').trim();
+
+      if (addressInput && line) {
+        addressInput.value = line;
+      }
+      if (cityRegionInput && cityRegion) {
+        cityRegionInput.value = cityRegion;
+        cityRegionInput.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+      if (postalCodeInput && postal) {
+        postalCodeInput.value = postal;
       }
     }
 
@@ -595,6 +632,29 @@
           }
           setStripeFeedback('', false);
         });
+
+        if (stripeAddressBlock) {
+          stripeAddressBlock.hidden = country !== 'United States';
+        }
+        if (country === 'United States' && stripeAddressMount) {
+          stripeState.addressElement = stripeState.elements.create('address', {
+            mode: 'shipping',
+            allowedCountries: ['US'],
+            fields: {
+              phone: 'never'
+            }
+          });
+          stripeState.addressElement.mount(stripeAddressMount);
+          stripeState.addressElement.on('change', function (event) {
+            if (event && event.error) {
+              setStripeFeedback(event.error.message || 'Address is invalid.', true);
+              return;
+            }
+            if (event && event.value && event.value.address) {
+              applyAddressFromStripe(event.value.address);
+            }
+          });
+        }
 
         stripeState.activePaymentIntentId = String(payload.paymentIntentId || '');
         stripeState.activeClientSecret = String(payload.clientSecret || '');
@@ -772,6 +832,9 @@
     function onShippingInputChange() {
       toggleServiceOptions(countrySelect, serviceSelect);
       toggleUSRegionControl(countrySelect, usRegionSelect);
+      if (stripeAddressBlock) {
+        stripeAddressBlock.hidden = String(countrySelect.value || '').trim() !== 'United States';
+      }
       setFeedback('', false);
       setStripeFeedback('', false);
       latestSummary = renderSummary();
