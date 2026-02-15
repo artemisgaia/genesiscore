@@ -1854,41 +1854,18 @@
   }
 
   function setupShareEntry() {
-    document.querySelectorAll('.nav-actions').forEach(function (actions) {
-      var shareButton = actions.querySelector('[data-share-link]');
-      if (!shareButton) {
-        shareButton = document.createElement('button');
-        shareButton.type = 'button';
-        shareButton.className = 'btn btn-outline share-trigger';
-        shareButton.setAttribute('data-share-link', 'true');
-        shareButton.setAttribute('aria-label', 'Share this page');
-        shareButton.textContent = 'Share';
+    var button = document.querySelector('[data-share-fab]');
+    if (!button) {
+      button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'share-fab';
+      button.setAttribute('data-share-fab', 'true');
+      button.setAttribute('aria-label', 'Share this page');
+      button.innerHTML = '<span>Share</span>';
+      document.body.appendChild(button);
+    }
 
-        var accountButton = actions.querySelector('[data-account-icon]');
-        var cartButton = actions.querySelector('.cart-trigger');
-        var anchor = accountButton || cartButton;
-        if (anchor) {
-          actions.insertBefore(shareButton, anchor);
-        } else {
-          actions.appendChild(shareButton);
-        }
-      }
-      bindShareAction(shareButton);
-    });
-
-    document.querySelectorAll('[data-mobile-menu]').forEach(function (menu) {
-      var mobileShare = menu.querySelector('[data-share-link-mobile]');
-      if (!mobileShare) {
-        mobileShare = document.createElement('button');
-        mobileShare.type = 'button';
-        mobileShare.className = 'btn btn-outline mobile-share-trigger';
-        mobileShare.setAttribute('data-share-link-mobile', 'true');
-        mobileShare.setAttribute('aria-label', 'Share this page');
-        mobileShare.textContent = 'Share This Page';
-        menu.insertBefore(mobileShare, menu.firstChild || null);
-      }
-      bindShareAction(mobileShare);
-    });
+    bindShareAction(button);
   }
 
   function setYear() {
