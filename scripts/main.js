@@ -1775,6 +1775,122 @@
     });
   }
 
+  function getShareUrl() {
+    try {
+      return new URL(window.location.href).toString();
+    } catch (error) {
+      return window.location.href;
+    }
+  }
+
+  function writeLinkToClipboard(url) {
+    if (!navigator.clipboard || typeof navigator.clipboard.writeText !== 'function') {
+      return Promise.reject(new Error('Clipboard API unavailable'));
+    }
+    return navigator.clipboard.writeText(url);
+  }
+
+  function fallbackPromptCopy(url) {
+    window.prompt('Copy this link:', url);
+  }
+
+  function shareCurrentPage() {
+    var url = getShareUrl();
+    var pageTitle = (document.title || 'Genesis Core').trim();
+    var payload = {
+      title: pageTitle,
+      text: 'Genesis Core',
+      url: url
+    };
+
+    if (typeof navigator.share === 'function') {
+      return navigator
+        .share(payload)
+        .then(function () {
+          return 'shared';
+        })
+        .catch(function (error) {
+          if (String(error && error.name || '') === 'AbortError') {
+            return 'cancelled';
+          }
+          return writeLinkToClipboard(url)
+            .then(function () {
+              return 'copied';
+            })
+            .catch(function () {
+              fallbackPromptCopy(url);
+              return 'prompted';
+            });
+        });
+    }
+
+    return writeLinkToClipboard(url)
+      .then(function () {
+        return 'copied';
+      })
+      .catch(function () {
+        fallbackPromptCopy(url);
+        return 'prompted';
+      });
+  }
+
+  function bindShareAction(button) {
+    if (!button || button.dataset.shareBound === 'true') return;
+    button.dataset.shareBound = 'true';
+    button.addEventListener('click', function () {
+      shareCurrentPage().then(function (result) {
+        if (result === 'cancelled') return;
+        if (result === 'shared') {
+          notifyUser('Share panel opened.', 'success');
+          return;
+        }
+        if (result === 'copied') {
+          notifyUser('Link copied. Ready to share.', 'success');
+          return;
+        }
+        notifyUser('Link ready. Paste from the copy prompt.', 'info');
+      });
+    });
+  }
+
+  function setupShareEntry() {
+    document.querySelectorAll('.nav-actions').forEach(function (actions) {
+      var shareButton = actions.querySelector('[data-share-link]');
+      if (!shareButton) {
+        shareButton = document.createElement('button');
+        shareButton.type = 'button';
+        shareButton.className = 'btn btn-outline share-trigger';
+        shareButton.setAttribute('data-share-link', 'true');
+        shareButton.setAttribute('aria-label', 'Share this page');
+        shareButton.textContent = 'Share';
+
+        var accountButton = actions.querySelector('[data-account-icon]');
+        var cartButton = actions.querySelector('.cart-trigger');
+        var anchor = accountButton || cartButton;
+        if (anchor) {
+          actions.insertBefore(shareButton, anchor);
+        } else {
+          actions.appendChild(shareButton);
+        }
+      }
+      bindShareAction(shareButton);
+    });
+
+    document.querySelectorAll('[data-mobile-menu]').forEach(function (menu) {
+      var mobileShare = menu.querySelector('[data-share-link-mobile]');
+      if (!mobileShare) {
+        mobileShare = document.createElement('button');
+        mobileShare.type = 'button';
+        mobileShare.className = 'btn btn-outline mobile-share-trigger';
+        mobileShare.setAttribute('data-share-link-mobile', 'true');
+        mobileShare.setAttribute('aria-label', 'Share this page');
+        mobileShare.textContent = 'Share This Page';
+        menu.insertBefore(mobileShare, menu.firstChild || null);
+      }
+      bindShareAction(mobileShare);
+    });
+  }
+
   function setYear() {
     document.querySelectorAll('[data-year]').forEach(function (node) {
       node.textContent = String(new Date().getFullYear());
@@ -1988,6 +2104,7 @@
     setupAccountEntry();
     setupLocationControls();
     setupTheme();
+    setupShareEntry();
     setupMobileMenu();
     setupCartDrawer();
     setupGlobalClickEvents();
