@@ -1775,12 +1775,81 @@
     });
   }
 
-  function getShareUrl() {
+  function canonicalShareUrl() {
+    var currentUrl;
     try {
-      return new URL(window.location.href).toString();
+      currentUrl = new URL(window.location.href);
     } catch (error) {
       return window.location.href;
     }
+    currentUrl.hash = '';
+
+    var canonicalNode = document.querySelector('link[rel="canonical"][href]');
+    if (!canonicalNode) {
+      return currentUrl.toString();
+    }
+
+    try {
+      var canonicalUrl = new URL(canonicalNode.getAttribute('href'), currentUrl.origin);
+      canonicalUrl.hash = '';
+
+      // For SPA-like route changes, a stale homepage canonical should not override the active view URL.
+      if (
+        canonicalUrl.origin === currentUrl.origin &&
+        canonicalUrl.pathname === '/' &&
+        currentUrl.pathname !== '/'
+      ) {
+        return currentUrl.toString();
+      }
+      return canonicalUrl.toString();
+    } catch (error) {
+      return currentUrl.toString();
+    }
+  }
+
+  function ensureShareLiveRegion() {
+    var region = document.querySelector('[data-share-live]');
+    if (region) return region;
+    region = document.createElement('p');
+    region.className = 'sr-only';
+    region.setAttribute('data-share-live', 'true');
+    region.setAttribute('aria-live', 'polite');
+    region.setAttribute('aria-atomic', 'true');
+    document.body.appendChild(region);
+    return region;
+  }
+
+  function announceShareStatus(message) {
+    var region = ensureShareLiveRegion();
+    region.textContent = '';
+    window.setTimeout(function () {
+      region.textContent = String(message || '');
+    }, 20);
+  }
+
+  function readShareDetailName(trigger) {
+    var button = trigger && trigger.closest ? trigger.closest('[data-share-action]') : null;
+    if (button && button.dataset && button.dataset.shareTitle) {
+      return String(button.dataset.shareTitle).trim();
+    }
+
+    var context = trigger && trigger.closest ? trigger.closest('.pdp-core, [data-share-context], article, main') : null;
+    if (!context) context = document.querySelector('.pdp-core, [data-share-context], main');
+    if (!context) return '';
+
+    var heading = context.querySelector('[data-share-title], h1');
+    return heading ? String(heading.textContent || '').trim() : '';
+  }
+
+  function buildSharePayload(trigger) {
+    var brand = 'Genesis Core';
+    var detailName = readShareDetailName(trigger);
+    var titleText = detailName || String(document.title || '').split('|')[0].trim() || brand;
+    return {
+      title: titleText + ' | ' + brand,
+      text: detailName ? detailName + ' · ' + brand : brand,
+      url: canonicalShareUrl()
+    };
   }
 
   function writeLinkToClipboard(url) {
@@ -1790,82 +1859,173 @@
     return navigator.clipboard.writeText(url);
   }
 
-  function fallbackPromptCopy(url) {
-    window.prompt('Copy this link:', url);
+  function legacyCopyToClipboard(url) {
+    try {
+      var field = document.createElement('textarea');
+      field.value = url;
+      field.setAttribute('readonly', '');
+      field.style.position = 'fixed';
+      field.style.opacity = '0';
+      field.style.pointerEvents = 'none';
+      field.style.top = '-999px';
+      document.body.appendChild(field);
+      field.focus();
+      field.select();
+      field.setSelectionRange(0, field.value.length);
+      var copied = document.execCommand && document.execCommand('copy');
+      document.body.removeChild(field);
+      return Boolean(copied);
+    } catch (error) {
+      return false;
+    }
   }
 
-  function shareCurrentPage() {
-    var url = getShareUrl();
-    var pageTitle = (document.title || 'Genesis Core').trim();
-    var payload = {
-      title: pageTitle,
-      text: 'Genesis Core',
-      url: url
-    };
+  function copyShareUrl(url) {
+    return writeLinkToClipboard(url).catch(function () {
+      if (legacyCopyToClipboard(url)) {
+        return Promise.resolve();
+      }
+      throw new Error('Clipboard write failed');
+    });
+  }
 
-    if (typeof navigator.share === 'function') {
-      return navigator
-        .share(payload)
-        .then(function () {
-          return 'shared';
-        })
-        .catch(function (error) {
-          if (String(error && error.name || '') === 'AbortError') {
-            return 'cancelled';
-          }
-          return writeLinkToClipboard(url)
-            .then(function () {
-              return 'copied';
-            })
-            .catch(function () {
-              fallbackPromptCopy(url);
-              return 'prompted';
-            });
-        });
+  function executeShare(trigger) {
+    var payload = buildSharePayload(trigger);
+    var hasNativeShare = typeof navigator.share === 'function';
+    if (hasNativeShare && typeof navigator.canShare === 'function') {
+      try {
+        hasNativeShare = navigator.canShare({ url: payload.url });
+      } catch (error) {
+        hasNativeShare = false;
+      }
     }
 
-    return writeLinkToClipboard(url)
-      .then(function () {
-        return 'copied';
-      })
-      .catch(function () {
-        fallbackPromptCopy(url);
-        return 'prompted';
+    if (!hasNativeShare) {
+      return copyShareUrl(payload.url).then(function () {
+        return { state: 'copied' };
       });
+    }
+
+    return navigator
+      .share(payload)
+      .then(function () {
+        return { state: 'shared' };
+      })
+      .catch(function (error) {
+        if (String(error && error.name || '') === 'AbortError') {
+          return { state: 'cancelled' };
+        }
+        return copyShareUrl(payload.url)
+          .then(function () {
+            return { state: 'copied' };
+          })
+          .catch(function () {
+            return { state: 'error' };
+          });
+      });
+  }
+
+  function publishShareResult(result) {
+    if (!result || !result.state) {
+      notifyUser('Unable to share right now.', 'warning');
+      announceShareStatus('Unable to share right now.');
+      return;
+    }
+
+    if (result.state === 'shared') {
+      notifyUser('Share opened.', 'success');
+      announceShareStatus('Share opened.');
+      return;
+    }
+
+    if (result.state === 'copied') {
+      notifyUser('Link copied.', 'success');
+      announceShareStatus('Link copied.');
+      return;
+    }
+
+    if (result.state === 'cancelled') {
+      notifyUser('Share canceled.', 'info');
+      announceShareStatus('Share canceled.');
+      return;
+    }
+
+    notifyUser('Unable to share link.', 'warning');
+    announceShareStatus('Unable to share link.');
   }
 
   function bindShareAction(button) {
     if (!button || button.dataset.shareBound === 'true') return;
     button.dataset.shareBound = 'true';
-    button.addEventListener('click', function () {
-      shareCurrentPage().then(function (result) {
-        if (result === 'cancelled') return;
-        if (result === 'shared') {
-          notifyUser('Share panel opened.', 'success');
-          return;
+    button.addEventListener('click', function (event) {
+      executeShare(event.currentTarget).then(publishShareResult);
+    });
+  }
+
+  function setupGlobalShareControls() {
+    document.querySelectorAll('.nav-actions').forEach(function (actions) {
+      var shareButton = actions.querySelector('[data-share-header]');
+      if (!shareButton) {
+        shareButton = document.createElement('button');
+        shareButton.type = 'button';
+        shareButton.className = 'btn btn-outline share-trigger';
+        shareButton.setAttribute('data-share-action', 'header');
+        shareButton.setAttribute('data-share-header', 'true');
+        shareButton.setAttribute('aria-label', 'Share this page');
+        shareButton.textContent = 'Share';
+        var cartButton = actions.querySelector('.cart-trigger');
+        if (cartButton) {
+          actions.insertBefore(shareButton, cartButton);
+        } else {
+          actions.appendChild(shareButton);
         }
-        if (result === 'copied') {
-          notifyUser('Link copied. Ready to share.', 'success');
-          return;
-        }
-        notifyUser('Link ready. Paste from the copy prompt.', 'info');
-      });
+      }
+      bindShareAction(shareButton);
+    });
+
+    document.querySelectorAll('[data-mobile-menu]').forEach(function (menu) {
+      var mobileShare = menu.querySelector('[data-share-mobile]');
+      if (!mobileShare) {
+        mobileShare = document.createElement('button');
+        mobileShare.type = 'button';
+        mobileShare.className = 'btn btn-outline mobile-share-trigger';
+        mobileShare.setAttribute('data-share-action', 'mobile-nav');
+        mobileShare.setAttribute('data-share-mobile', 'true');
+        mobileShare.setAttribute('aria-label', 'Share this page');
+        mobileShare.textContent = 'Share This Page';
+        menu.insertBefore(mobileShare, menu.firstChild || null);
+      }
+      bindShareAction(mobileShare);
+    });
+  }
+
+  function setupDetailShareControls() {
+    document.querySelectorAll('.pdp-actions').forEach(function (actions) {
+      var detailShare = actions.querySelector('[data-share-detail]');
+      if (!detailShare) {
+        detailShare = document.createElement('button');
+        detailShare.type = 'button';
+        detailShare.className = 'btn btn-outline share-detail-trigger';
+        detailShare.setAttribute('data-share-action', 'detail');
+        detailShare.setAttribute('data-share-detail', 'true');
+        detailShare.textContent = 'Share';
+        actions.appendChild(detailShare);
+      }
+
+      var detailName = readShareDetailName(actions);
+      var label = detailName ? 'Share ' + detailName : 'Share this product';
+      detailShare.setAttribute('aria-label', label);
+      detailShare.dataset.shareTitle = detailName;
+      bindShareAction(detailShare);
     });
   }
 
   function setupShareEntry() {
-    var button = document.querySelector('[data-share-fab]');
-    if (!button) {
-      button = document.createElement('button');
-      button.type = 'button';
-      button.className = 'share-fab';
-      button.setAttribute('data-share-fab', 'true');
-      button.setAttribute('aria-label', 'Share this page');
-      button.innerHTML = '<span>Share</span>';
-      document.body.appendChild(button);
-    }
+    setupGlobalShareControls();
+    setupDetailShareControls();
 
-    bindShareAction(button);
+    window.addEventListener('popstate', setupDetailShareControls);
+    window.addEventListener('hashchange', setupDetailShareControls);
   }
 
   function setYear() {
