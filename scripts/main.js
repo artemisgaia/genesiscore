@@ -1999,33 +1999,15 @@
     });
   }
 
-  function setupDetailShareControls() {
-    document.querySelectorAll('.pdp-actions').forEach(function (actions) {
-      var detailShare = actions.querySelector('[data-share-detail]');
-      if (!detailShare) {
-        detailShare = document.createElement('button');
-        detailShare.type = 'button';
-        detailShare.className = 'btn btn-outline share-detail-trigger';
-        detailShare.setAttribute('data-share-action', 'detail');
-        detailShare.setAttribute('data-share-detail', 'true');
-        detailShare.textContent = 'Share';
-        actions.appendChild(detailShare);
-      }
-
-      var detailName = readShareDetailName(actions);
-      var label = detailName ? 'Share ' + detailName : 'Share this product';
-      detailShare.setAttribute('aria-label', label);
-      detailShare.dataset.shareTitle = detailName;
-      bindShareAction(detailShare);
+  function removeDetailShareControls() {
+    document.querySelectorAll('[data-share-detail]').forEach(function (button) {
+      button.remove();
     });
   }
 
   function setupShareEntry() {
     setupGlobalShareControls();
-    setupDetailShareControls();
-
-    window.addEventListener('popstate', setupDetailShareControls);
-    window.addEventListener('hashchange', setupDetailShareControls);
+    removeDetailShareControls();
   }
 
   function setYear() {

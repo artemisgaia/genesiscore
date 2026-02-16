@@ -519,14 +519,6 @@ button:focus-visible {
   justify-content: center;
 }
 
-.share-detail-trigger {
-  min-height: 44px;
-}
-
-.pdp-actions .share-detail-trigger {
-  min-width: 128px;
-}
-
 .hero {
   padding: 5.2rem 0 4.8rem;
 }
