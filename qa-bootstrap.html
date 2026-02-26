@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QA Bootstrap</title>
+  </head>
+  <body>
+    <script>
+      (function () {
+        try {
+          localStorage.setItem(
+            'genesis_core_location_v1',
+            JSON.stringify({
+              country: 'United States',
+              source: 'manual',
+              confirmed: true,
+              updatedAt: new Date().toISOString()
+            })
+          );
+        } catch (error) {
+          // no-op
+        }
+        var params = new URLSearchParams(window.location.search);
+        var next = params.get('next') || '/index.html';
+        window.location.replace(next);
+      })();
+    </script>
+  </body>
+</html>
