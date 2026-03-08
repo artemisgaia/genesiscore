@@ -2735,7 +2735,15 @@ window.GENESIS_IMPORTED_PRODUCTS = [
     "tagline": "Provides antioxidant support against oxidative stress.",
     "featured": false,
     "badge": "Core Recovery",
-    "image": "/assets/packshots/core-recovery-turmeric-gummies.svg",
+    "image": "https://res.cloudinary.com/dfygdydcj/image/upload/v1772939723/284aa188-c816-4df9-9adb-4ed2c91433eb.png",
+    "gallery": [
+      "https://res.cloudinary.com/dfygdydcj/image/upload/v1772939723/284aa188-c816-4df9-9adb-4ed2c91433eb.png",
+      "https://res.cloudinary.com/dfygdydcj/image/upload/v1772939744/2000d27c-452e-4c87-b327-eeff75ee890b.png",
+      "https://res.cloudinary.com/dfygdydcj/image/upload/v1772939772/e7d4bea1-376d-4ee3-8d56-1172caff6ad0.png",
+      "https://res.cloudinary.com/dfygdydcj/image/upload/v1772939778/b5c4fa06-1aa3-49a3-a615-ed16548fb55d.png",
+      "https://res.cloudinary.com/dfygdydcj/image/upload/v1772939786/52a3e43d-3470-4d4d-bf98-d86000d95454.png",
+      "https://res.cloudinary.com/dfygdydcj/image/upload/v1772939792/86662f50-7e21-48bb-83f5-0e9efdd2db97.png"
+    ],
     "url": "/products/core-recovery-turmeric-gummies.html",
     "shippingScope": "ALL_SUPPORTED_DESTINATIONS",
     "sourceCategory": "Specialty Supplements",

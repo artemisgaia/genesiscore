@@ -1775,6 +1775,39 @@
     });
   }
 
+  function setupProductGalleries() {
+    document.querySelectorAll('[data-product-gallery]').forEach(function (gallery) {
+      var mainImage = gallery.querySelector('[data-gallery-main]');
+      var thumbs = Array.prototype.slice.call(gallery.querySelectorAll('[data-gallery-thumb]'));
+      if (!mainImage || !thumbs.length) {
+        return;
+      }
+
+      function activate(button) {
+        var nextSrc = button.getAttribute('data-gallery-image');
+        var nextAlt = button.getAttribute('data-gallery-alt') || mainImage.alt;
+        if (!nextSrc) {
+          return;
+        }
+
+        mainImage.src = nextSrc;
+        mainImage.alt = nextAlt;
+
+        thumbs.forEach(function (thumb) {
+          var isActive = thumb === button;
+          thumb.classList.toggle('is-active', isActive);
+          thumb.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        });
+      }
+
+      thumbs.forEach(function (button) {
+        button.addEventListener('click', function () {
+          activate(button);
+        });
+      });
+    });
+  }
+
   function canonicalShareUrl() {
     var currentUrl;
     try {
@@ -2217,6 +2250,7 @@
     setupSkipLink();
     setupFormAccessibility();
     optimizeImages();
+    setupProductGalleries();
     tunePdpLongformReadability();
     markStickyPDP();
     enhancePDPExperience();
